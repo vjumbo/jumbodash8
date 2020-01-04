@@ -1,0 +1,122 @@
+<mat-table #table [dataSource]="dataSource"
+           [@animateStagger]="{value:'50'}">
+    <!-- Checkbox Column -->
+    <!--<ng-container matColumnDef="id">
+        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+        <mat-cell *matCellDef="let entidad">
+            <mat-checkbox [(ngModel)]="checkboxes[entidad.id]" (ngModelChange)="onSelectedChange(entidad.id)"
+                          (click)="$event.stopPropagation()">
+            </mat-checkbox>
+
+        </mat-cell>
+    </ng-container>-->
+
+    <!-- Avatar Column
+    <ng-container matColumnDef="avatar">
+        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+        <mat-cell *matCellDef="let entidad">
+            <img class="avatar" *ngIf="entidad.avatar" [alt]="entidad.name"
+                 [src]="entidad.avatar"/>
+        </mat-cell>
+    </ng-container>-->
+
+    <!-- potential_no Column -->
+    <ng-container matColumnDef="potential_no">
+        <mat-header-cell *matHeaderCellDef>Oportunidad</mat-header-cell>
+        <mat-cell *matCellDef="let entidad">
+            <p class="text-truncate font-weight-600">{{entidad.potential_no}}</p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- potentialname Column -->
+    <ng-container matColumnDef="potentialname">
+        <mat-header-cell *matHeaderCellDef>Nombre</mat-header-cell>
+        <mat-cell *matCellDef="let entidad">
+            <p class="text-truncate font-weight-600">{{entidad.potentialname}}</p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- sales_stage Column -->
+    <ng-container matColumnDef="sales_stage">
+        <mat-header-cell *matHeaderCellDef>Estado de Ventas</mat-header-cell>
+        <mat-cell *matCellDef="let entidad">
+            <p class="text-truncate font-weight-600">{{entidad.sales_stage}}</p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- service_status Column -->
+    <ng-container matColumnDef="service_status">
+        <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
+        <mat-cell *matCellDef="let entidad">
+            <p class="text-truncate font-weight-600">{{entidad.service_status}}</p>
+        </mat-cell>
+    </ng-container>
+
+
+    <!-- Phone Column
+    <ng-container matColumnDef="phone">
+        <mat-header-cell *matHeaderCellDef fxHide fxShow.gt-md>Phone</mat-header-cell>
+        <mat-cell *matCellDef="let entidad" fxHide fxShow.gt-md>
+            <p class="phone text-truncate">
+                {{entidad.phone}}
+            </p>
+        </mat-cell>
+    </ng-container>-->
+
+    <!-- Job Title Column
+    <ng-container matColumnDef="jobTitle">
+        <mat-header-cell *matHeaderCellDef fxHide fxShow.gt-lg>Job title</mat-header-cell>
+        <mat-cell *matCellDef="let entidad" fxHide fxShow.gt-lg>
+            <p class="job-title text-truncate">
+                {{entidad.jobTitle}}
+            </p>
+        </mat-cell>
+    </ng-container> -->
+
+    <!-- Company Column
+    <ng-container matColumnDef="company">
+        <mat-header-cell *matHeaderCellDef fxHide fxShow.gt-lg>Company</mat-header-cell>
+        <mat-cell *matCellDef="let entidad" fxHide fxShow.gt-lg>
+            <p class="company text-truncate">
+                {{entidad.company}}
+            </p>
+        </mat-cell>
+    </ng-container>-->
+
+    <!-- Buttons Column -->
+    <ng-container matColumnDef="buttons">
+        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+        <mat-cell *matCellDef="let entidad">
+            <div fxFlex="row" fxLayoutAlign="end center">
+                <button mat-icon-button (click)="$event.stopPropagation();toggleStar(entidad.id)" aria-label="Toggle star">
+                    <mat-icon class="amber-fg" *ngIf="user.starred.includes(entidad.id)">star</mat-icon>
+                    <mat-icon class="secondary-text" *ngIf="!user.starred.includes(entidad.id)">star_border</mat-icon>
+                </button>
+
+                <button mat-icon-button [matMenuTriggerFor]="moreMenu" aria-label="More"
+                        (click)="$event.stopPropagation();">
+                    <mat-icon class="secondary-text">more_vert</mat-icon>
+                </button>
+
+                <mat-menu #moreMenu="matMenu">
+                    <button mat-menu-item aria-label="remove" (click)="deleteOportunidad(entidad)">
+                        <mat-icon>delete</mat-icon>
+                        <span>Remove</span>
+                    </button>
+                </mat-menu>
+            </div>
+
+        </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let entidad; columns: displayedColumns;"
+             class="entidad"
+             (click)="editOportunidad(entidad)"
+             [ngClass]="{'accent-50':checkboxes[entidad.id]}"
+             matRipple
+             [@animate]="{value:'*',params:{y:'100%'}}">
+    </mat-row>
+</mat-table>
+
+

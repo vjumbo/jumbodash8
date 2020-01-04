@@ -1,0 +1,25 @@
+[class*="mat-column-"] {
+    padding-right: 4px;
+}
+.mat-column-id {
+    flex: 1 1 5%;
+    -webkit-justify-content: center;
+    justify-content: center;
+}
+
+.mat-column-nombre {
+    flex: 1 1 20%;
+}
+
+
+.mat-column-descripcion {
+    flex: 1 1 55%;
+}
+
+.mat-column-usuario {
+    flex: 1 1 10%;
+}
+
+.mat-column-costo {
+    flex: 0 1 10%;
+}

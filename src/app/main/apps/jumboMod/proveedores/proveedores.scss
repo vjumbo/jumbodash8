@@ -1,0 +1,17 @@
+[class*="mat-column-"] {
+    padding-right: 4px;
+}
+
+.mat-column-vendor_no, .mat-column-id {
+    flex: 1 1 5%;
+    -webkit-justify-content: center;
+    justify-content: center;
+}
+
+.mat-column-vendorname, .mat-column-cf_1102{
+    flex: 1 1 30%;
+}
+
+.mat-column-phone, .mat-column-email {
+    flex: 1 1 20%;
+}

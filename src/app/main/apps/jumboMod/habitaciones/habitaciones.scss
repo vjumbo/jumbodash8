@@ -1,0 +1,40 @@
+[class*="mat-column-"] {
+    padding-right: 4px;
+}
+
+.mat-column-id {
+    flex: 0 1 5%;
+    -webkit-justify-content: center;
+    justify-content: center;
+}
+
+.mat-column-nombre, .mat-column-tipoCama {
+    flex: 0 1 15%;
+}
+
+
+.mat-column-descripcion {
+    flex: 0 1 25%;
+}
+
+.mat-column-usuario {
+    flex: 0 1 10%;
+    -webkit-justify-content: center;
+    justify-content: center;
+}
+
+.mat-column-image {
+    flex: 0 1 84px;
+
+    .entidad-image {
+        width: 52px;
+        height: 52px;
+        border: 1px solid rgba(0, 0, 0, .12);
+    }
+}
+
+.mat-column-capacidad, .mat-column-adulto, .mat-column-ninos, .mat-column-inf {
+    flex: 1 0 7.5%;
+    -webkit-justify-content: center;
+    justify-content: center;
+}

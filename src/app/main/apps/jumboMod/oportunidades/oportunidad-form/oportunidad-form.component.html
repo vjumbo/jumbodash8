@@ -1,0 +1,137 @@
+<div class="dialog-content-wrapper">
+    <mat-toolbar matDialogTitle class="mat-accent m-0">
+        <mat-toolbar-row fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">{{dialogTitle}}</span>
+            <button mat-icon-button (click)="matDialogRef.close()" aria-label="Close dialog">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-toolbar-row>
+
+        <mat-toolbar-row class="toolbar-bottom py-16" fxLayout="column" fxLayoutAlign="center center">
+            <!--<img [src]="entidad.avatar" class="avatar entidad-avatar huge m-0"
+                 [alt]="entidad.name"/>-->
+            <div class="entidad-name mt-8">{{entidad.potential_no}} {{entidad.potentialname}}</div>
+        </mat-toolbar-row>
+    </mat-toolbar>
+
+    <div mat-dialog-content class="p-24 pb-0 m-0" fusePerfectScrollbar>
+
+        <form [formGroup]="entidadForm">
+
+            <div fxLayout="row" fxLayoutAlign="start start">
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Nombre Oportunidad</mat-label>
+                    <mat-icon matSuffix class="secondary-text">account_circle</mat-icon>
+                    <input name="potentialname" formControlName="potentialname" matInput required>
+                </mat-form-field>
+            </div>
+
+            <div fxLayout="row" fxLayoutAlign="start start">
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Estado de Ventas</mat-label>
+                    <mat-icon matSuffix class="secondary-text">account_circle</mat-icon>
+                    <input name="sales_stage" formControlName="sales_stage" matInput>
+                </mat-form-field>
+            </div>
+
+            <div fxLayout="row" fxLayoutAlign="start start">
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Status</mat-label>
+                    <mat-icon matSuffix class="secondary-text">star</mat-icon>
+                    <input name="service_status" formControlName="service_status" matInput>
+                </mat-form-field>
+            </div>
+
+            <!--<div fxLayout="row" fxLayoutAlign="start start">
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Phone number</mat-label>
+                    <mat-icon matSuffix class="secondary-text">phone</mat-icon>
+                    <input formControlName="phone" matInput>
+                </mat-form-field>
+            </div>-->
+
+            <!--<div fxLayout="row" fxLayoutAlign="start start">
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Email</mat-label>
+                    <mat-icon matSuffix class="secondary-text">email</mat-icon>
+                    <input name="email" formControlName="email" matInput type="email">
+                </mat-form-field>
+            </div>-->
+
+            <!--<div fxLayout="row" fxLayoutAlign="start start">
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Company</mat-label>
+                    <mat-icon matSuffix class="secondary-text">domain</mat-icon>
+                    <input name="company" formControlName="company" matInput>
+                </mat-form-field>
+            </div>-->
+
+            <!--<div fxLayout="row" fxLayoutAlign="start start">
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Job title</mat-label>
+                    <mat-icon matSuffix class="secondary-text">work</mat-icon>
+                    <input name="jobTitle" formControlName="jobTitle" matInput>
+                </mat-form-field>
+            </div>-->
+
+            <!--<div fxLayout="row" fxLayoutAlign="start start">
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Birthday</mat-label>
+                    <input matInput [matDatepicker]="birthdayDatePicker" name="birthday" formControlName="birthday">
+                    <mat-datepicker-toggle matSuffix [for]="birthdayDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #birthdayDatePicker></mat-datepicker>
+                </mat-form-field>
+            </div>-->
+
+            <!--<div fxLayout="row" fxLayoutAlign="start start">
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Address</mat-label>
+                    <mat-icon matSuffix class="secondary-text">home</mat-icon>
+                    <input name="address" formControlName="address" matInput>
+                </mat-form-field>
+            </div>-->
+
+            <div fxLayout="row" class="textarea-wrapper" fxLayoutAlign="start start">
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Description</mat-label>
+                    <textarea name="description" formControlName="description" matInput type="text" max-rows="4"></textarea>
+                </mat-form-field>
+            </div>
+
+        </form>
+
+    </div>
+
+    <div mat-dialog-actions class="m-0 p-16" fxLayout="row" fxLayoutAlign="end center">
+        <!--(click)="matDialogRef.close(['delete',entidadForm])"-->
+        <button *ngIf="['Cotizado', 'Aceptado', 'Finalizado'].includes(action)"
+                mat-button
+                class="mr-8"
+                (click)="goDocument('Cotizado')"
+                aria-label="Delete"
+                matTooltip="Delete">
+            Cotizado
+        </button>
+
+        <!--(click)="matDialogRef.close(entidadForm)"-->
+        <button *ngIf="['Aceptado', 'Finalizado'].includes(action)"
+                mat-button
+                class="save-button"
+                (click)="goDocument('Aceptado')"
+                [disabled]="entidadForm.invalid"
+                aria-label="SAVE">
+            Aceptado
+        </button>
+
+        <!--(click)="matDialogRef.close(['save',entidadForm])"-->
+        <button *ngIf="action === 'Finalizado'"
+                mat-button
+                class="save-button"
+                (click)="goDocument('Finalizado')"
+                [disabled]="entidadForm.invalid"
+                aria-label="SAVE">
+            Finalizado
+        </button>
+
+    </div>
+</div>

@@ -1,0 +1,920 @@
+<div id="entidad" class="page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg mat-accent-bg"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div class="header mat-accent-bg" fxLayout="row" fxLayoutAlign="space-between center">
+
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+
+                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="entidadConst.urlEntidades">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div class="entidad-image mr-8 mr-sm-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    <!--<img *ngIf="entidad.images[0]" [src]="entidad.images[0].url">
+                    <img *ngIf="!entidad.images[0]" [src]="'assets/images/ecommerce/entidad-image-placeholder.png'">-->
+                </div>
+
+                <div fxLayout="column" fxLayoutAlign="start start"
+                     [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    <div class="h2" *ngIf="pageType ==='edit'">
+                        {{entidad.nombre}}
+                    </div>
+                    <div class="h2" *ngIf="pageType ==='new'">
+                        Nuevo {{entidadConst.name}}
+                    </div>
+                    <div class="subtitle secondary-text">
+                        <span>Detalle {{entidadConst.name}}</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="end">
+                <button mat-raised-button
+                        class="save-entidad-button mat-white-bg"
+                        [disabled]="entidadForm.invalid"
+                        *ngIf="pageType ==='new'" (click)="addEntidad()">
+                    <span>Agregar</span>
+                </button>
+
+                <button mat-raised-button
+                        class="save-entidad-button mat-white-bg"
+                        [disabled]="entidadForm.invalid || entidadForm.pristine"
+                        *ngIf="pageType ==='edit'" (click)="saveEntidad()">
+                    <span>Guardar</span>
+                </button>
+
+                <button mat-raised-button
+                        class="save-entidad-button mat-white-bg"
+                        *ngIf="pageType ==='edit'" (click)="removeEntidad()">
+                    <span>Borrar</span>
+                </button>
+            </div>
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card mat-white-bg">
+
+            <!-- CONTENT -->
+            <div class="content">
+
+                <form name="entidadForm" [formGroup]="entidadForm" class="entidad w-100-p" fxLayout="column" fxFlex>
+                    <mat-tab-group>
+
+                        <mat-tab label="Informacion {{entidadConst.name}}">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <mat-form-field class="w-50-p">
+                                    <input matInput
+                                           name="nombre"
+                                           formControlName="nombre"
+                                           placeholder="Nombre del Hotel"
+                                           required>
+                                    <mat-error *ngIf="entidadForm.get('nombre').hasError('required')">
+                                        Se requiere el nombre del Hotel
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field class="w-50-p">
+                                    <mat-label>Segmento del Hotel</mat-label>
+                                    <mat-select formControlName="segmetohotel" required>
+                                        <mat-option *ngFor="let ht of hotelTypes" [value]="ht">
+                                            {{ht}}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error *ngIf="entidadForm.get('segmetohotel').hasError('required')">
+                                        Se requiere el Segmento del Hotel
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field class="w-50-p">
+                                    <input type="text" matInput
+                                           placeholder="Region del Hotel"
+                                           formControlName="region"
+                                           required
+                                           name="region"
+                                           [matAutocomplete]="autoGroup">
+                                    <mat-autocomplete #autoGroup="matAutocomplete">
+                                        <mat-optgroup *ngFor="let group of regionGroupOptions | async" [label]="group.type">
+                                            <mat-option *ngFor="let name of group.options" [value]="name">
+                                                {{name}}
+                                            </mat-option>
+                                        </mat-optgroup>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+
+                                <mat-form-field class="w-50-p">
+                                    <input matInput
+                                           type="text"
+                                           name="categoria"
+                                           formControlName="categoria"
+                                           placeholder="Categoria del Hotel"
+                                           >
+                                    <!--<mat-error *ngIf="entidadForm.get('categoria').hasError('required')">
+                                        Se requiere el nombre del Hotel
+                                    </mat-error>-->
+                                </mat-form-field>
+
+                                <mat-form-field class="w-100-p">
+                                    <textarea matInput
+                                              name="descripcion"
+                                              formControlName="descripcion"
+                                              placeholder="Descripcion del Hotel"
+                                              rows="5">
+                                    </textarea>
+                                </mat-form-field>
+                            </div>
+
+                        </mat-tab>
+
+                        <mat-tab label="Regimen Alimentacion">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div class="w-30-p">
+                                    <button mat-button (click)="addRegimenAlimentacion()">Agregar Regimen Alimentacion</button><br><br>
+                                </div>
+
+                                <div class="w-100-p" formArrayName="regimenAlimentacion"
+                                     *ngFor="let regAli of regimenAlimentacion.controls; let i = index;">
+                                    <h3>Regimen {{i+1}}: </h3>
+                                    <div [formGroupName]="i">
+                                        <mat-form-field class="w-80-p">
+                                            <input matInput
+                                                   name="nombreRegimen"
+                                                   formControlName="nombreRegimen"
+                                                   placeholder="Nombre del Regimen"
+                                            >
+                                        </mat-form-field>
+                                        <mat-form-field class="w-80-p">
+                                            <textarea matInput
+                                                      name="descripcion"
+                                                      formControlName="descripcion"
+                                                      placeholder="Descripcion Regimen Alimentacion"
+                                                      rows="5">
+                                            </textarea>
+                                        </mat-form-field>
+                                        <span class="w-20-p">
+                                            <button mat-button (click)="removeRegimenAlimentacion(i)">
+                                                Borrar Regimen
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Tipo Plan">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div class="w-30-p">
+                                    <button mat-button (click)="addTipoPlan()">Agregar Tipo Plan</button><br><br>
+                                </div>
+
+                                <div class="w-100-p" formArrayName="tipoPlan"
+                                     *ngFor="let tipoP of tipoPlan.controls; let i = index;">
+                                    <h3>Tipo Plan {{i+1}}: </h3>
+                                    <div [formGroupName]="i">
+                                        <mat-form-field class="w-80-p">
+                                            <input matInput
+                                                   name="nombrePlna"
+                                                   formControlName="nombrePlna"
+                                                   placeholder="Nombre del Plan"
+                                            >
+                                        </mat-form-field>
+                                        <mat-form-field class="w-80-p">
+                                            <textarea matInput
+                                                      name="descripcion"
+                                                      formControlName="descripcion"
+                                                      placeholder="Descripcion Tipo Plan"
+                                                      rows="5">
+                                            </textarea>
+                                        </mat-form-field>
+                                        <span class="w-20-p">
+                                            <button mat-button (click)="removeTipoPlan(i)">
+                                                Borrar Plan
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Tipo Tarifa">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div class="w-30-p">
+                                    <button mat-button (click)="addTipoTarifa()">Agregar Tipo Tarifa</button><br><br>
+                                </div>
+
+                                <div class="w-100-p" formArrayName="tipoTarifa"
+                                     *ngFor="let tipoT of tipoTarifa.controls; let i = index;">
+                                    <h3>Tipo Tarifa {{i+1}}: </h3>
+                                    <div [formGroupName]="i">
+
+                                        <!-- tipoHabitacion -->
+
+                                        <mat-form-field class="w-20-p">
+                                            <input matInput
+                                                   name="numPersonas"
+                                                   type="number"
+                                                   formControlName="numPersonas"
+                                                   placeholder="Numero Personas"
+                                            >
+                                        </mat-form-field>
+
+                                        <mat-form-field class="w-20-p">
+                                            <mat-label>Habitacion</mat-label>
+                                            <mat-select formControlName="tipoHabitacion">
+                                                <mat-option *ngFor="let hb of getSelectedHabitaciones()"
+                                                            [value]="hb._id" required>
+                                                    {{hb.nombre}} - capacidad: {{hb.capacidad}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+
+                                        <mat-form-field class="w-10-p">
+                                            <mat-label>Tipo</mat-label>
+                                            <mat-select formControlName="tipo">
+                                                <mat-option *ngFor="let tp of tipoTarifaTypes"
+                                                            [value]="tp" required>
+                                                    {{tp}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+
+                                        <!-- tipo  -->
+                                        <mat-form-field class="w-10-p">
+                                            <mat-label>Moneda</mat-label>
+                                            <mat-select formControlName="moneda">
+                                                <mat-option *ngFor="let ht of monedas"
+                                                            [value]="ht.id" required>
+                                                    {{ht.currency_code}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+
+                                        <mat-form-field class="w-20-p">
+                                            <input matInput
+                                                   name="monto"
+                                                   type="number"
+                                                   formControlName="monto"
+                                                   placeholder="Monto"
+                                            >
+                                            <span matPrefix>{{monedaSimbolo(i)}}</span>
+                                        </mat-form-field>
+                                        <span class="w-20-p">
+                                            <button mat-button (click)="removeTipoTarifa(i)">
+                                                Borrar Tarifa
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Informacion de Contactos">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div class="w-100-p">
+                                    <h4>Email</h4>
+
+                                    <div formGroupName="email">
+                                        <mat-form-field class="w-30-p">
+                                            <input matInput
+                                                   type="email"
+                                                   name="pagos"
+                                                   formControlName="pagos"
+                                                   placeholder="Pagos"
+                                                   >
+                                            <mat-error *ngIf="entidadForm.get('email.pagos').hasError('email')">
+                                                la info debe ser tipo e-mail
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field class="w-30-p">
+                                            <input matInput
+                                                   type="email"
+                                                   name="reservas"
+                                                   formControlName="reservas"
+                                                   placeholder="Reservas"
+                                            >
+                                            <mat-error *ngIf="entidadForm.get('email.reservas').hasError('email')">
+                                                la info debe ser tipo e-mail
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field class="w-30-p">
+                                            <input matInput
+                                                   type="email"
+                                                   name="jefeReservas"
+                                                   formControlName="jefeReservas"
+                                                   placeholder="Jefe de Reservas"
+                                            >
+                                            <mat-error *ngIf="entidadForm.get('email.jefeReservas').hasError('email')">
+                                                la info debe ser tipo e-mail
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="w-100-p">
+                                    <h4>Telefonos</h4>
+
+                                    <div formGroupName="telefonos">
+                                        <mat-form-field class="w-30-p">
+                                            <input matInput
+                                                   type="tel"
+                                                   name="pagos"
+                                                   formControlName="pagos"
+                                                   placeholder="Pagos"
+                                            >
+                                        </mat-form-field>
+                                        <mat-form-field class="w-30-p">
+                                            <input matInput
+                                                   type="tel"
+                                                   name="reservas"
+                                                   formControlName="reservas"
+                                                   placeholder="Reservas"
+                                            >
+                                        </mat-form-field>
+                                        <mat-form-field class="w-30-p">
+                                            <input matInput
+                                                   type="tel"
+                                                   name="jefeReservas"
+                                                   formControlName="jefeReservas"
+                                                   placeholder="Jefe de Reservas"
+                                            >
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="w-100-p">
+                                    <h4>Ejecutivo de Ventas</h4>
+
+                                    <div formGroupName="ejecutivoVentas">
+                                        <mat-form-field class="w-30-p">
+                                            <input matInput
+                                                   type="text"
+                                                   name="nombre"
+                                                   formControlName="nombre"
+                                                   placeholder="Nombre"
+                                            >
+                                        </mat-form-field>
+                                        <mat-form-field class="w-30-p">
+                                        <input matInput
+                                               type="tel"
+                                               name="telefono"
+                                               formControlName="telefono"
+                                               placeholder="Telefono"
+                                        >
+                                    </mat-form-field>
+                                        <mat-form-field class="w-30-p">
+                                            <input matInput
+                                                   type="email"
+                                                   name="email"
+                                                   formControlName="email"
+                                                   placeholder="E-mail"
+                                            >
+                                            <mat-error *ngIf="entidadForm.get('ejecutivoVentas.email').hasError('email')">
+                                                la info debe ser tipo e-mail
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Habitaciones">
+                            <div class="section pb-48 w-100-p">
+                                <form class="update-status p-24"
+                                      (ngSubmit)="updateHabitaciones()"
+                                      [formGroup]="habitacionesForm"
+                                      fxLayout="row" fxLayoutAlign="start center">
+
+                                    <mat-form-field appearance="outline" class="mr-16 w-70-p" fxFlex>
+                                        <mat-label>Seleccionar Habitacion</mat-label>
+                                        <mat-select formControlName="habitacion" required>
+                                            <mat-option *ngFor="let hab of getHabitaciones()"
+                                                        [value]="hab._id">
+                                                {{hab.nombre}} - capacidad: {{hab.capacidad}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <button mat-raised-button class="mat-accent w-30-p"
+                                            [disabled]="habitacionesForm.invalid">
+                                        Agregar habitacion
+                                    </button>
+                                    <!--<mat-form-field appearance="outline" class="mr-16 w-70-p" fxFlex>
+                                        &lt;!&ndash;<mat-label>Seleccionar Habitacion</mat-label>&ndash;&gt;
+                                        <input type="text" placeholder="Escoger una Habitacion" aria-label="Number"
+                                               matInput formControlName="habitacion" required [matAutocomplete]="autoHab">
+                                        <mat-autocomplete autoActiveFirstOption #autoHab="matAutocomplete">
+                                            <mat-option *ngFor="let option of filteredHabOptions | async" [value]="option">
+                                                {{option}}
+                                            </mat-option>
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+
+                                    <button mat-raised-button class="mat-accent w-30-p"
+                                            [disabled]="habitacionesForm.invalid">
+                                        Agregar habitacion
+                                    </button>-->
+                                </form>
+
+                                <table class="simple w-100-p">
+                                    <thead>
+                                    <tr>
+                                        <th>Habitacion</th>
+                                        <th>Capacidad</th>
+                                        <th>Tipo de Cama</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    <tr *ngFor="let hab of getSelectedHabitaciones()">
+                                        <td>
+                                                <span class="status h6 p-4">
+                                                    {{hab.nombre}}
+                                                </span>
+                                        </td>
+                                        <td>
+                                                <span>
+                                                    {{hab.capacidad}}
+                                                </span>
+                                        </td>
+                                        <td>
+                                                <span>
+                                                    {{hab.tipoCama}}
+                                                </span>
+                                        </td>
+                                        <td>
+                                            <button mat-button (click)="eliminarHab(hab._id)">Eliminar</button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Servicios">
+                            <div class="section pb-48 w-100-p">
+                                <form class="update-status p-24"
+                                      (ngSubmit)="updateServicios()"
+                                      [formGroup]="serviciosForm"
+                                      fxLayout="row" fxLayoutAlign="start center">
+
+                                    <mat-form-field appearance="outline" class="mr-16 w-70-p" fxFlex>
+                                        <mat-label>Seleccionar Servicio</mat-label>
+                                        <mat-select formControlName="servicio" required>
+                                            <mat-option *ngFor="let serv of getServicios()"
+                                                        [value]="serv._id">
+                                                {{serv.nombre}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                    <button mat-raised-button class="mat-accent w-30-p"
+                                            [disabled]="serviciosForm.invalid">
+                                        Agregar Servicio
+                                    </button>
+                                </form>
+
+                                <table class="simple w-100-p">
+                                    <thead>
+                                    <tr>
+                                        <th>Servicio</th>
+                                        <th>Descripcion</th>
+                                        <th>Costo</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    <tr *ngFor="let serv of getSelectedServicios()">
+                                        <td>
+                                                <span class="status h6 p-4">
+                                                    {{serv.nombre}}
+                                                </span>
+                                        </td>
+                                        <td>
+                                                <span>
+                                                    {{serv.descripcion}}
+                                                </span>
+                                        </td>
+                                        <td>
+                                                <span>
+                                                    {{serv.costo}}
+                                                </span>
+                                        </td>
+                                        <td>
+                                            <button mat-button (click)="eliminarServ(serv._id)">Eliminar</button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Servicios no Incluidos">
+                            <div class="section pb-48 w-100-p">
+                                <form class="update-status p-24"
+                                      (ngSubmit)="updateNoServicios()"
+                                      [formGroup]="noServiciosForm"
+                                      fxLayout="row" fxLayoutAlign="start center">
+
+                                    <mat-form-field appearance="outline" class="mr-16 w-70-p" fxFlex>
+                                        <mat-label>Seleccionar Servicio No Incluido</mat-label>
+                                        <mat-select formControlName="servicio" required>
+                                            <mat-option *ngFor="let serv of getServicios()"
+                                                        [value]="serv._id">
+                                                {{serv.nombre}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                    <button mat-raised-button class="mat-accent w-30-p"
+                                            [disabled]="noServiciosForm.invalid">
+                                        Agregar Servicio no Incluido
+                                    </button>
+                                </form>
+
+                                <table class="simple w-100-p">
+                                    <thead>
+                                    <tr>
+                                        <th>Servicio</th>
+                                        <th>Descripcion</th>
+                                        <th>Costo</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    <tr *ngFor="let serv of getSelectedNoServicios()">
+                                        <td>
+                                                <span class="status h6 p-4">
+                                                    {{serv.nombre}}
+                                                </span>
+                                        </td>
+                                        <td>
+                                                <span>
+                                                    {{serv.descripcion}}
+                                                </span>
+                                        </td>
+                                        <td>
+                                                <span>
+                                                    {{serv.costo}}
+                                                </span>
+                                        </td>
+                                        <td>
+                                            <button mat-button (click)="eliminarNoServ(serv._id)">Eliminar</button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Penalidades">
+                            <div class="section pb-48 w-100-p">
+                                <form class="update-status p-24"
+                                      (ngSubmit)="updatePenalidades()"
+                                      [formGroup]="penalidadesForm"
+                                      fxLayout="row" fxLayoutAlign="start center">
+
+                                    <mat-form-field appearance="outline" class="mr-16 w-70-p" fxFlex>
+                                        <mat-label>Seleccionar Penalidades</mat-label>
+                                        <mat-select formControlName="penalidad" required>
+                                            <mat-option *ngFor="let pen of getPenalidades()"
+                                                        [value]="pen._id">
+                                                {{pen.nombre}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                    <button mat-raised-button class="mat-accent w-30-p"
+                                            [disabled]="penalidadesForm.invalid">
+                                        Agregar Penalidad
+                                    </button>
+                                </form>
+
+                                <table class="simple w-100-p">
+                                    <thead>
+                                    <tr>
+                                        <th>Penalidad</th>
+                                        <th>descripcion</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    <tr *ngFor="let pen of getSelectedPenalidades()">
+                                        <td>
+                                                <span class="status h6 p-4">
+                                                    {{pen.nombre}}
+                                                </span>
+                                        </td>
+                                        <td>
+                                                <span>
+                                                    {{pen.descripcion}}
+                                                </span>
+                                        </td>
+                                        <td>
+                                            <button mat-button (click)="eliminarPen(pen._id)">Eliminar</button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Cuenta Bancaria">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div class="w-100-p">
+                                    <h4>Cuenta Bancaria</h4>
+
+                                    <div formGroupName="cuentaBancaria">
+                                        <mat-form-field class="w-70-p">
+                                            <input matInput
+                                                   type="text"
+                                                   name="razonSocial"
+                                                   formControlName="razonSocial"
+                                                   placeholder="Razon Social"
+                                            >
+                                        </mat-form-field>
+
+                                        <mat-form-field class="w-30-p">
+                                            <input type="text" placeholder="Pais" aria-label="Number" matInput formControlName="pais" [matAutocomplete]="auto">
+                                            <mat-autocomplete #auto="matAutocomplete">
+                                                <mat-option *ngFor="let pais of paisfilteredOptions | async" [value]="pais">
+                                                    {{pais}}
+                                                </mat-option>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+
+                                        <mat-form-field class="w-50-p">
+                                            <input matInput
+                                                   type="text"
+                                                   name="nombreBeneficiario"
+                                                   formControlName="nombreBeneficiario"
+                                                   placeholder="Nombre Beneficiario"
+                                            >
+                                        </mat-form-field>
+
+                                        <mat-form-field class="w-50-p">
+                                            <input matInput
+                                                   type="text"
+                                                   name="nombreBancoBeneficiario"
+                                                   formControlName="nombreBancoBeneficiario"
+                                                   placeholder="Nombre Banco Beneficiario"
+                                            >
+                                        </mat-form-field>
+
+                                        <mat-form-field class="w-100-p">
+                                            <input matInput
+                                                   type="text"
+                                                   name="numeroCuenta"
+                                                   formControlName="numeroCuenta"
+                                                   placeholder="Numero de Cuenta"
+                                            >
+                                        </mat-form-field>
+
+                                        <mat-form-field class="w-30-p">
+                                            <input matInput
+                                                   type="text"
+                                                   name="tipoCuenta"
+                                                   formControlName="tipoCuenta"
+                                                   placeholder="Tipo de Cuenta"
+                                            >
+                                        </mat-form-field>
+
+                                        <mat-form-field class="w-35-p">
+                                            <input matInput
+                                                   type="text"
+                                                   name="aba"
+                                                   formControlName="aba"
+                                                   placeholder="ABA"
+                                            >
+                                        </mat-form-field>
+
+                                        <mat-form-field class="w-35-p">
+                                            <input matInput
+                                                   type="text"
+                                                   name="swift"
+                                                   formControlName="swift"
+                                                   placeholder="SWIFT"
+                                            >
+                                        </mat-form-field>
+
+                                        <mat-form-field class="w-50-p">
+                                            <input matInput
+                                                   type="text"
+                                                   name="bancoIntermediario"
+                                                   formControlName="bancoIntermediario"
+                                                   placeholder="Banco Intermediario"
+                                            >
+                                        </mat-form-field>
+
+                                        <mat-form-field class="w-50-p">
+                                            <input matInput
+                                                   type="text"
+                                                   name="cuentaIntermediaria"
+                                                   formControlName="cuentaIntermediaria"
+                                                   placeholder="Cuenta Intermediario"
+                                            >
+                                        </mat-form-field>
+
+                                        <div formGroupName="formaPago">
+                                            <h4>Formas de Pago</h4>
+                                            <mat-tab-group>
+                                                <mat-tab label="Tarjeta de Credito">
+                                                    <div class="tab-content p-24 w-100-p" fusePerfectScrollbar>
+                                                        <div formGroupName="tarjetaCredito">
+                                                            <mat-form-field class="w-30-p">
+                                                                <mat-label>Disponible</mat-label>
+                                                                <mat-select formControlName="disponible">
+                                                                    <mat-option *ngFor="let d of [{id: 'Si', value: true}, {id: 'No', value: false}]"
+                                                                                [value]="d.value" required>
+                                                                        {{d.id}}
+                                                                    </mat-option>
+                                                                </mat-select>
+                                                            </mat-form-field>
+                                                            <mat-form-field class="w-70-p">
+                                                                <input matInput
+                                                                       type="number"
+                                                                       name="porcentaje"
+                                                                       formControlName="porcentaje"
+                                                                       placeholder="Porcentaje"
+                                                                >
+                                                                <span matPrefix>%</span>
+                                                            </mat-form-field>
+                                                        </div>
+                                                    </div>
+                                                </mat-tab>
+                                                <mat-tab label="Transferencia">
+                                                    <div class="tab-content p-24 w-100-p" fusePerfectScrollbar>
+                                                        <div formGroupName="transferencia">
+                                                            <mat-form-field class="w-30-p">
+                                                                <mat-label>Disponible</mat-label>
+                                                                <mat-select formControlName="disponible">
+                                                                    <mat-option *ngFor="let d of [{id: 'Si', value: true}, {id: 'No', value: false}]"
+                                                                                [value]="d.value" required>
+                                                                        {{d.id}}
+                                                                    </mat-option>
+                                                                </mat-select>
+                                                            </mat-form-field>
+                                                            <mat-form-field class="w-20-p">
+                                                                <mat-select placeholder="Moneda" formControlName="moneda">
+                                                                    <mat-option *ngFor="let moneda of monedas" [value]="moneda.id">
+                                                                        {{moneda.currency_name}}
+                                                                    </mat-option>
+                                                                </mat-select>
+                                                            </mat-form-field>
+                                                            <mat-form-field class="w-50-p">
+                                                                <input matInput
+                                                                       type="number"
+                                                                       name="costoTransferencia"
+                                                                       formControlName="costoTransferencia"
+                                                                       placeholder="Costo Transferencia"
+                                                                >
+                                                                <span matPrefix>{{getTransferenciaModeloSimbolo()}}</span>
+                                                            </mat-form-field>
+                                                        </div>
+                                                    </div>
+                                                </mat-tab>
+                                                <mat-tab label="Efectivo">
+                                                    <div class="tab-content p-24 w-100-p" fusePerfectScrollbar>
+                                                        <div formGroupName="efectivo">
+                                                            <mat-form-field class="w-100-p">
+                                                                <mat-label>Disponible</mat-label>
+                                                                <mat-select formControlName="disponible">
+                                                                    <mat-option *ngFor="let d of [{id: 'Si', value: true}, {id: 'No', value: false}]"
+                                                                                [value]="d.value" required>
+                                                                        {{d.id}}
+                                                                    </mat-option>
+                                                                </mat-select>
+                                                            </mat-form-field>
+                                                        </div>
+                                                    </div>
+                                                </mat-tab>
+                                            </mat-tab-group>
+                                        </div>
+
+                                        <mat-form-field class="w-100-p">
+                                            <textarea matInput
+                                                      name="descripcion"
+                                                      formControlName="descripcion"
+                                                      placeholder="Descripcion de la Cuenta Bancaria"
+                                                      rows="5">
+                                            </textarea>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Archivos">
+                            <div class="section pb-48 w-100-p">
+                                <div class="tab-content p-24 w-100-p" fusePerfectScrollbar>
+                                    <div formGroupName="cargoPromociones" fxLayout="row" fxLayoutAlign="start center">
+                                        <mat-form-field appearance="outline" class="mr-16 w-40-p" fxFlex>
+                                            <input matInput
+                                                   type="text"
+                                                   name="name1"
+                                                   formControlName="name"
+                                                   placeholder="Archivo Cargo de Promociones"
+                                                   readonly
+                                                   (click)="downloadFileCp()"
+                                            >
+                                        </mat-form-field>
+                                        <input
+                                            type="file"
+                                            name="data1"
+                                            hidden
+                                            placeholder=""
+                                            (change)="onFileChangeCp($event)"
+                                            #fileInput
+                                        >
+                                        <button mat-raised-button class="mat-accent w-40-p" (click)="fileInput.click()">
+                                            Agregar Cargo de Promociones
+                                        </button>
+                                        <button *ngIf="hasFileCp" class="ml-4" mat-mini-fab color="warn" (click)="deletefileCp()">
+                                            X
+                                        </button>
+                                    </div>
+                                    <div formGroupName="contrato" fxLayout="row" fxLayoutAlign="start center">
+                                        <mat-form-field appearance="outline" class="mr-16 w-40-p" fxFlex>
+                                            <input matInput
+                                                   type="text"
+                                                   name="name2"
+                                                   formControlName="name"
+                                                   placeholder="Archivo Contrato"
+                                                   readonly
+                                                   (click)="downloadFileCon()"
+                                            >
+                                        </mat-form-field>
+                                        <input
+                                            type="file"
+                                            name="data2"
+                                            hidden
+                                            placeholder=""
+                                            (change)="onFileChangeCon($event)"
+                                            #fileConInput
+                                        >
+                                        <button mat-raised-button class="mat-accent w-40-p" (click)="fileConInput.click()">
+                                            Agregar Contrato
+                                        </button>
+                                        <button *ngIf="hasFileCon" class="ml-4" mat-mini-fab color="warn" (click)="deletefileCon()">
+                                            X
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Imagenes Hoteles">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div *ngIf="getImagenes().length < 3" class="update-status p-24"
+                                      fxLayout="row" fxLayoutAlign="start center">
+                                        <input
+                                            type="file"
+                                            name="imagen"
+                                            hidden
+                                            placeholder=""
+                                            (change)="onImage($event)"
+                                            #ImageInput
+                                        >
+                                        <button mat-raised-button class="mat-accent w-40-p" (click)="ImageInput.click()">
+                                            Agregar Imagen
+                                        </button>
+                                </div>
+                                <div fxLayout="row wrap" fxLayoutAlign="start start">
+
+                                    <div *ngFor="let image of getImagenes()">
+                                        <button class="ml-4" mat-mini-fab color="warn" (click)="eliminarImg(image)">
+                                            X
+                                        </button>
+                                        <div
+                                             class="product-image" fxlayout="row" fxLayoutAlign="center center">
+                                            <img class="media" [src]="'data:'+image.type+';base64,'+image.data" (click)="downloadImage(image)">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </mat-tab>
+
+                    </mat-tab-group>
+                </form>
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+    </div>
+    <!-- / CENTER -->
+</div>

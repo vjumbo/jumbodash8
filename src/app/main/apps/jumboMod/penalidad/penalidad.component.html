@@ -1,0 +1,167 @@
+<div id="entidad" class="page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg mat-accent-bg"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div class="header mat-accent-bg" fxLayout="row" fxLayoutAlign="space-between center">
+
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+
+                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="'/'+entidadConst.urlEntidades">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div class="entidad-image mr-8 mr-sm-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    <!--<img *ngIf="entidad.images[0]" [src]="entidad.images[0].url">
+                    <img *ngIf="!entidad.images[0]" [src]="'assets/images/ecommerce/entidad-image-placeholder.png'">-->
+                </div>
+
+                <div fxLayout="column" fxLayoutAlign="start start"
+                     [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    <div class="h2" *ngIf="pageType ==='edit'">
+                        {{entidad.nombre}}
+                    </div>
+                    <div class="h2" *ngIf="pageType ==='new'">
+                        Nuevo {{entidadConst.name}}
+                    </div>
+                    <div class="subtitle secondary-text">
+                        <span>Detalle {{entidadConst.name}}</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="end">
+                <button mat-raised-button
+                        class="save-entidad-button mat-white-bg"
+                        [disabled]="entidadForm.invalid"
+                        *ngIf="pageType ==='new'" (click)="addEntidad()">
+                    <span>Agregar</span>
+                </button>
+
+                <button mat-raised-button
+                        class="save-entidad-button mat-white-bg"
+                        [disabled]="entidadForm.invalid || entidadForm.pristine"
+                        *ngIf="pageType ==='edit'" (click)="saveEntidad()">
+                    <span>Guardar</span>
+                </button>
+
+                <button mat-raised-button
+                        class="save-entidad-button mat-white-bg"
+                        *ngIf="pageType ==='edit'" (click)="removeEntidad()">
+                    <span>Borrar</span>
+                </button>
+            </div>
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card mat-white-bg">
+
+            <!-- CONTENT -->
+            <div class="content">
+
+                <form name="entidadForm" [formGroup]="entidadForm" class="entidad w-100-p" fxLayout="column" fxFlex>
+
+                    <mat-tab-group>
+
+                        <mat-tab label="Informacion {{entidadConst.name}}">
+
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                                <mat-form-field class="w-100-p">
+                                    <input matInput
+                                           name="nombre"
+                                           formControlName="nombre"
+                                           placeholder="Nombre de la Penalidad"
+                                           required>
+                                    <mat-error *ngIf="entidadForm.get('nombre').hasError('required')">
+                                        Se requiere el nombre de la penalidad
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <div class="w-30-p">
+                                    <button mat-button (click)="addFecha()">Agregar Fecha</button><br><br>
+                                </div>
+                                <div class="w-70-p" formArrayName="fechas"
+                                     *ngFor="let fecha of fechas.controls; let i = index;">
+                                    <h3>Fecha {{i+1}}: </h3>
+                                    <div [formGroupName]="i">
+                                        <mat-form-field class="w-40-p">
+                                            <input matInput formControlName="fechasini" [matDatepicker]="fechasini" placeholder="Fecha inicio">
+                                            <mat-datepicker-toggle matSuffix [for]="fechasini"></mat-datepicker-toggle>
+                                            <mat-datepicker #fechasini></mat-datepicker>
+                                        </mat-form-field>
+                                        <mat-form-field class="w-40-p">
+                                            <input matInput formControlName="fechaFin" [matDatepicker]="fechaFin" placeholder="Fecha Fin">
+                                            <mat-datepicker-toggle matSuffix [for]="fechaFin"></mat-datepicker-toggle>
+                                            <mat-datepicker #fechaFin></mat-datepicker>
+                                        </mat-form-field>
+                                        <span class="w-20-p">
+                                            <button mat-button (click)="removeFecha(i)">
+                                                Borrar Fechas
+                                            </button>
+                                        </span>
+                                        <!--<input type="date" formControlName="fechasini" placeholder="Fecha Inicio">
+                                        <input type="date" formControlName="fechaFin" placeholder="Fecha Fin">
+                                        <button mat-button (click)="removeFecha(i)">
+                                            Borrar Fechas
+                                        </button>-->
+                                    </div>
+                                </div>
+
+                                <mat-form-field class="w-100-p">
+                                    <input matInput
+                                           name="cancelacionesDias"
+                                           formControlName="cancelacionesDias"
+                                           placeholder="Dias de Cancelaciones" type="number">
+                                    <!--<span matPrefix>$&nbsp;</span>-->
+                                </mat-form-field>
+
+                                <mat-form-field class="w-100-p">
+                                    <input matInput
+                                           name="cargo"
+                                           formControlName="cargo"
+                                           placeholder="Cargo de la Cancelacion"
+                                           >
+                                </mat-form-field>
+
+                                <mat-form-field class="w-100-p">
+                                    <textarea matInput
+                                              name="descripcion"
+                                              formControlName="descripcion"
+                                              placeholder="Descripcion de la Penalizacion"
+                                              rows="5">
+                                    </textarea>
+                                </mat-form-field>
+
+
+                                <!--<mat-form-field fxFlex="100">
+                                    <mat-select placeholder="Moneda" formControlName="moneda">
+                                        <mat-option *ngFor="let moneda of monedas" [value]="moneda.id">
+                                            {{moneda.nombre}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>-->
+                               <!-- <pre>{{entidadForm.value | json}}</pre>-->
+                            </div>
+
+                        </mat-tab>
+
+                    </mat-tab-group>
+                </form>
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+    </div>
+    <!-- / CENTER -->
+</div>

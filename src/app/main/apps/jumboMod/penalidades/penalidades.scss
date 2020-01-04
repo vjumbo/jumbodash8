@@ -1,0 +1,47 @@
+[class*="mat-column-"] {
+    padding-right: 4px;
+}
+
+.mat-column-id {
+    flex: 0 1 5%;
+    -webkit-justify-content: center;
+    justify-content: center;
+}
+
+/*.mat-column-fechasini {
+    flex: 0 1 20%;
+}
+
+.mat-column-fechaFin {
+    flex: 0 1 20%;
+}*/
+
+.mat-column-cancelacionesDias {
+    flex: 0 1 10%;
+    -webkit-justify-content: center;
+    justify-content: center;
+}
+
+.mat-column-cargo, .mat-column-nombre {
+    flex: 0 1 15%;
+}
+
+.mat-column-descripcion {
+    flex: 0 1 45%;
+}
+
+.mat-column-usuario {
+    flex: 0 1 10%;
+    -webkit-justify-content: center;
+    justify-content: center;
+}
+
+.mat-column-image {
+    flex: 0 1 84px;
+
+    .entidad-image {
+        width: 52px;
+        height: 52px;
+        border: 1px solid rgba(0, 0, 0, .12);
+    }
+}
