@@ -61,7 +61,7 @@
         "hammerjs": "2.0.8",
         "http-errors": "latest",
         "jsonwebtoken": "8.5.1",
-        "lodash": "4.17.11",
+        "lodash": "4.17.13",
         "moment": "2.24.0",
         "mongoose": "5.8.4",
         "mongoose-auto-increment": "5.0.1",
