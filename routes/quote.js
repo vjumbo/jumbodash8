@@ -20,6 +20,19 @@ router.get('/', cors(), async (req, res, next) => {
   });
 });
 
+router.get('/oportunidad/:oportunidad', cors(), async (req, res, next) =>{
+    const valid = await validToken(req.headers);
+    if (!valid) return res.sendStatus(403);
+    Quote.findOne({ idQuote: req.params.oportunidad },  (err, post) => {
+        if (!post) {
+            res.json([]);
+        } else {
+            if (err) return next(err);
+            res.json(post);
+        }
+    });
+});
+
 router.get('/:id', cors(), async (req, res, next) =>{
     const valid = await validToken(req.headers);
     if (!valid) return res.sendStatus(403);

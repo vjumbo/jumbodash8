@@ -64,7 +64,8 @@ export class ProveedorService implements Resolve<any>
     async getEntidad(): Promise<any>
     {
         this.monedas = await this._vtgierService.doQuery('select * from Currency');
-        this.hoteles = await <any>this.requestServices.reqGet(`${BackEndConst.backEndUrl}${BackEndConst.endPoints.hoteles}`).toPromise();
+        this.hoteles = await this.requestServices
+            .reqGet(`${BackEndConst.backEndUrl}${BackEndConst.endPoints.hoteles}`).toPromise() as any;
         return new Promise((resolve, reject) => {
             if ( !this.routeParams.id ) // === 'new'
             {

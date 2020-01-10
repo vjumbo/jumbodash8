@@ -134,7 +134,7 @@ export class HotelComponent implements OnInit, OnDestroy
         console.log('subRegions', this._countries.subRegions);*/
         this.regionGroups = [
             {type: 'Regiones', options: this._countries.regions},
-            {type: 'Sub-Regiones', options: <string[]>(Object.values(this._countries.subRegions)).reduce((pre: string[], actu: string[]) => [...pre, ...actu] , [])},
+            {type: 'Sub-Regiones', options: (Object.values(this._countries.subRegions)).reduce((pre: string[], actu: string[]) => [...pre, ...actu] , []) as string[]},
             {type: 'Paises', options: this._countries.countries.map( c => c.name)}
         ];
     }
@@ -450,7 +450,7 @@ export class HotelComponent implements OnInit, OnDestroy
         this.regimenAlimentacion.push(this.createRegimenAlimentacion());
     }
 
-    removeRegimenAlimentacion (index): void {
+    removeRegimenAlimentacion(index): void {
         this.regimenAlimentacion.removeAt(index);
     }
 
@@ -478,7 +478,7 @@ export class HotelComponent implements OnInit, OnDestroy
         this.tipoPlan.push(this.createTipoPlan());
     }
 
-    removeTipoPlan (index): void {
+    removeTipoPlan(index): void {
         this.tipoPlan.removeAt(index);
     }
 
@@ -509,7 +509,7 @@ export class HotelComponent implements OnInit, OnDestroy
         this.tipoTarifa.push(this.createTipoTarifa());
     }
 
-    removeTipoTarifa (index): void {
+    removeTipoTarifa(index): void {
         this.tipoTarifa.removeAt(index);
     }
 
@@ -634,7 +634,7 @@ export class HotelComponent implements OnInit, OnDestroy
             this._fuseProgressBarService.show();
             reader.readAsDataURL(file);
             reader.onload = () => {
-                const base: string = <string>reader.result;
+                const base: string = reader.result as string;
                 const base64 = base.split(',');
                 const dataFile = {
                     name: file.name,
@@ -657,7 +657,7 @@ export class HotelComponent implements OnInit, OnDestroy
             this._fuseProgressBarService.show();
             reader.readAsDataURL(file);
             reader.onload = () => {
-                const base: string = <string>reader.result;
+                const base: string = reader.result as string;
                 const base64 = base.split(',');
                 const dataFile = {
                     name: file.name,
@@ -680,7 +680,7 @@ export class HotelComponent implements OnInit, OnDestroy
             this._fuseProgressBarService.show();
             reader.readAsDataURL(file);
             reader.onload = () => {
-                const base: string = <string>reader.result;
+                const base: string = reader.result as string;
                 const base64 = base.split(',');
                 const dataFile = {
                     name: file.name,

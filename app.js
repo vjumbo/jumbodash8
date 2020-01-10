@@ -18,6 +18,7 @@ const paisRouter = require('./routes/pais');
 const quoteRouter = require('./routes/quote');
 /*const salesorderRouter = require('./routes/salesorder');
 const invoiceRouter = require('./routes/invoice');*/
+const autoIncrement = require('mongoose-auto-increment');
 
 const app = express();
 
@@ -30,6 +31,8 @@ mongoose.connect(mongoAtlas,
   {useNewUrlParser: true, useCreateIndex: true,  promiseLibrary: require('bluebird') })
   .then(() =>  console.log('connection successful'))
   .catch((err) => console.error(err));
+
+autoIncrement.initialize(mongoose.connection);
 
 app.use(logger('dev'));
 /*app.use(express.json());
@@ -47,7 +50,7 @@ app.use('/jumboApi/monedas', monedaRouter);
 app.use('/jumboApi/servicios', servicioRouter);
 app.use('/jumboApi/penalidades', penalidadRouter);
 app.use('/jumboApi/paises', paisRouter);
-app.use('/jumboApi/docs/quote', quoteRouter);
+app.use('/jumboApi/docs', quoteRouter);
 /*app.use('/jumboApi/docs/salesorder', salesorderRouter);
 app.use('/jumboApi/docs/invoice', invoiceRouter);*/
 app.get('*', function (req, res, next) {

@@ -6,6 +6,7 @@ import {Habitacion, Hotel, Moneda, Penalidad, Servicio} from '@configs/interface
 import {BackEndConst} from '@configs/constantes';
 import {RequestServices} from '@service/servicios.service';
 import {VtigerServiceService} from '@service/vtiger.Service';
+import {EntidadFuntionsService} from '@service/entidad-funtions.service';
 
 @Injectable()
 export class HotelService implements Resolve<any>
@@ -27,10 +28,12 @@ export class HotelService implements Resolve<any>
      *
      * @param requestServices
      * @param _vtgierService
+     * @param entidadFuntionsService
      */
     constructor(
         private requestServices: RequestServices,
         private _vtgierService: VtigerServiceService,
+        private entidadFuntionsService: EntidadFuntionsService,
     )
     {
         // Set the defaults
@@ -69,27 +72,22 @@ export class HotelService implements Resolve<any>
     async getEntidad(): Promise<any>
     {
         this.monedas = await this._vtgierService.doQuery('select * from Currency');
-        this.hotelTypes = await <any>this.requestServices.reqGet(`${this.url}/hoteltypes`).toPromise();
-        this.tipoTarifaTypes = await <any>this.requestServices.reqGet(`${this.url}/tipotarifatypes`).toPromise();
-        this.habitaciones = await <any>this.requestServices.reqGet(`${BackEndConst.backEndUrl}${BackEndConst.endPoints.habitaciones}`).toPromise();
-        this.servicios = await <any>this.requestServices.reqGet(`${BackEndConst.backEndUrl}${BackEndConst.endPoints.servicios}`).toPromise();
-        this.penalidades = await <any>this.requestServices.reqGet(`${BackEndConst.backEndUrl}${BackEndConst.endPoints.penalidades}`).toPromise();
-        return new Promise((resolve, reject) => {
-            if ( !this.routeParams.id ) // === 'new'
-            {
-                this.onEntidadChanged.next(false);
-                resolve(false);
-            }
-            else
-            {
-                this.requestServices.reqGet(`${this.url}/${this.routeParams.id}`)
-                    .subscribe((response: any) => {
-                        this.entidad = response;
-                        this.onEntidadChanged.next(this.entidad);
-                        resolve(response);
-                    }, reject);
-            }
-        });
+        this.hotelTypes = await this.requestServices
+            .reqGet(`${this.url}/hoteltypes`).toPromise() as any;
+        this.tipoTarifaTypes = await this.requestServices
+            .reqGet(`${this.url}/tipotarifatypes`).toPromise() as any;
+        this.habitaciones = await this.requestServices
+            .reqGet(`${BackEndConst.backEndUrl}${BackEndConst.endPoints.habitaciones}`).toPromise() as any;
+        this.servicios = await this.requestServices
+            .reqGet(`${BackEndConst.backEndUrl}${BackEndConst.endPoints.servicios}`).toPromise() as any;
+        this.penalidades = await this.requestServices
+            .reqGet(`${BackEndConst.backEndUrl}${BackEndConst.endPoints.penalidades}`).toPromise()as any;
+        return this.entidadFuntionsService.getEntidad(
+            this.routeParams,
+            this.onEntidadChanged,
+            this.entidad,
+            this.url
+        );
     }
 
     /**

@@ -23,6 +23,7 @@ import {VtigerServiceService} from '@service/vtiger.Service';
 import {JumboBackEndService} from '@service/jumbo-back-end.service';
 import {CountriesService} from '@service/countries.service';
 import {RequestServices} from '@service/servicios.service';
+import {MAT_DATE_LOCALE} from '@angular/material';
 
 
 
@@ -58,6 +59,7 @@ import {RequestServices} from '@service/servicios.service';
     ],
     providers: [
         VtigerServiceService, JumboBackEndService, CountriesService, RequestServices,
+        {provide: MAT_DATE_LOCALE, useValue: 'es-CO'},
     ],
     bootstrap   : [
         AppComponent

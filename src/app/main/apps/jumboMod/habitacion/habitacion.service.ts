@@ -5,6 +5,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import {Habitacion} from '@configs/interfaces';
 import {BackEndConst} from '@configs/constantes';
 import {RequestServices} from '@service/servicios.service';
+import {EntidadFuntionsService} from '@service/entidad-funtions.service';
 
 @Injectable()
 export class HabitacionService implements Resolve<any>
@@ -18,9 +19,11 @@ export class HabitacionService implements Resolve<any>
      * Constructor
      *
      * @param requestServices
+     * @param entidadFuntionsService
      */
     constructor(
         private requestServices: RequestServices,
+        private entidadFuntionsService: EntidadFuntionsService,
     )
     {
         // Set the defaults
@@ -58,22 +61,12 @@ export class HabitacionService implements Resolve<any>
      */
     getEntidad(): Promise<any>
     {
-        return new Promise((resolve, reject) => {
-            if ( !this.routeParams.id ) // === 'new'
-            {
-                this.onEntidadChanged.next(false);
-                resolve(false);
-            }
-            else
-            {
-                this.requestServices.reqGet(`${this.url}/${this.routeParams.id}`)
-                    .subscribe((response: any) => {
-                        this.entidad = response;
-                        this.onEntidadChanged.next(this.entidad);
-                        resolve(response);
-                    }, reject);
-            }
-        });
+        return this.entidadFuntionsService.getEntidad(
+            this.routeParams,
+            this.onEntidadChanged,
+            this.entidad,
+            this.url
+        );
     }
 
     /**

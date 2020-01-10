@@ -5,6 +5,7 @@ import {Moneda, Servicio} from '@configs/interfaces';
 import {BackEndConst} from '@configs/constantes';
 import {RequestServices} from '@service/servicios.service';
 import {VtigerServiceService} from '@service/vtiger.Service';
+import {EntidadFuntionsService} from '@service/entidad-funtions.service';
 
 @Injectable()
 export class ServicioService implements Resolve<any>
@@ -20,10 +21,12 @@ export class ServicioService implements Resolve<any>
      *
      * @param requestServices
      * @param _vtgierService
+     * @param entidadFuntionsService
      */
     constructor(
         private requestServices: RequestServices,
         private _vtgierService: VtigerServiceService,
+        private entidadFuntionsService: EntidadFuntionsService,
     )
     {
         // Set the defaults
@@ -62,22 +65,12 @@ export class ServicioService implements Resolve<any>
     async getEntidad(): Promise<any>
     {
         this.monedas = await this._vtgierService.doQuery('select * from Currency');
-        return new Promise((resolve, reject) => {
-            if ( !this.routeParams.id ) // === 'new'
-            {
-                this.onEntidadChanged.next(false);
-                resolve(false);
-            }
-            else
-            {
-                this.requestServices.reqGet(`${this.url}/${this.routeParams.id}`)
-                    .subscribe((response: any) => {
-                        this.entidad = response;
-                        this.onEntidadChanged.next(this.entidad);
-                        resolve(response);
-                    }, reject);
-            }
-        });
+        return this.entidadFuntionsService.getEntidad(
+            this.routeParams,
+            this.onEntidadChanged,
+            this.entidad,
+            this.url
+        );
     }
 
     /**

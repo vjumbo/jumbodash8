@@ -7,7 +7,7 @@ import {FuseWidgetModule} from '@fuse/components';
   exports: [
       MatCoreModule,
       FuseSharedModule,
-      FuseWidgetModule
+      FuseWidgetModule,
   ],
 })
 export class CoreModule { }

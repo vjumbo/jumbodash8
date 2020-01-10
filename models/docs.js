@@ -5,6 +5,8 @@ const SistemaSchema = require('./sistema');
 const docStatus = require("../def/docStatus");
 const Hotel = require('./hotel');
 const Vuelos = require('./vuelos');
+const HotelDocsSchema = require('./hotelDocs');
+autoIncrement = require('mongoose-auto-increment');
 
 const DocsSchema = new Schema({
     id: Schema.Types.ObjectId,
@@ -12,6 +14,7 @@ const DocsSchema = new Schema({
     crmPotential: {},
     status: { type: String, enum: docStatus, required: true},
     fechaElaboracion: Date,
+    asesor: String,
     oficina: String,
     telefono: String,
     emailAsesor: String,
@@ -22,13 +25,10 @@ const DocsSchema = new Schema({
     autorizaPublicidad: {type: Boolean, default: false},
     cirugia: {type: Boolean, default: false},
     embarazo: {type: Boolean, default: false},
+    otro: String,
     destino: String,
     tipoCotizacion: String,
-    hoteles: [{
-        hotel: {},
-        habitacion: [{}],
-
-    }],
+    hoteles: [HotelDocsSchema],
     planIncluye: String,
     planNoIncluye: String,
     chd: Number,
@@ -47,5 +47,7 @@ const DocsSchema = new Schema({
     cambioNombre: String,
     sistema: SistemaSchema,
 });
+autoIncrement.initialize(mongoose.connection);
+DocsSchema.plugin(autoIncrement.plugin, { model: 'Docs', field: 'idQuote', startAt: 100000 });
 
 module.exports = mongoose.model('Docs', DocsSchema);

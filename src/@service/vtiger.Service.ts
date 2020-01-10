@@ -3,6 +3,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {CrmConst} from '@configs/constantes';
 import {Utilities} from '@utilities/utilities';
 import {md5} from '@utilities/utilities/md5';
+import {Router} from '@angular/router';
 
 export interface Response {
     success: boolean;
@@ -116,7 +117,7 @@ export class VtigerServiceService {
     /**
      * JSONify input data.
      */
-    static toJSON (input): any {
+    static toJSON(input): any {
         return JSON.parse(input);
     }
 
@@ -124,7 +125,7 @@ export class VtigerServiceService {
     /**
      * Get actual record id from the response id.
      */
-    static getRecordId (id: string): string {
+    static getRecordId(id: string): string {
         const ids = id.split('x');
         return ids[1];
     }
@@ -132,14 +133,14 @@ export class VtigerServiceService {
     /**
      * Convert to JSON String.
      */
-    static toJSONString (input): string {
+    static toJSONString(input): string {
         return JSON.stringify(input);
     }
 
     /**
      * Perform the callback now.
      */
-    static __performCallback (callback, result): void {
+    static __performCallback(callback, result): void {
         if (callback) {
             let callbackFunction = callback;
             let callbackArguments = false;
@@ -156,7 +157,7 @@ export class VtigerServiceService {
     /**
      * Get Result Column Names.
      */
-    static getResultColumns (result): any[] {
+    static getResultColumns(result): any[] {
         const columns = [];
         if (result !== null && result.length !== 0) {
             const firstrecord: any = result[0];
@@ -171,6 +172,7 @@ export class VtigerServiceService {
 
     constructor(
         private http: HttpClient,
+        private router: Router,
     ) {
         this._servicebase = 'webservice.php';
         this._apikeyBase = 'dashboardlogin.php';
@@ -204,7 +206,7 @@ export class VtigerServiceService {
                 // 'Content-Type': 'application/x-www-form-urlencoded',
                 // 'Content-Type':  'application/json',
                 // 'Content-Type': 'multipart/form-data',
-                'Accept': 'application/json'
+                Accept: 'application/json'
             }),
             withCredentials: false
         };
@@ -213,10 +215,15 @@ export class VtigerServiceService {
     /**
      * Check if result has any error.
      */
-    hasError (resultdata: Response, servicio?: string): boolean {
+    hasError(resultdata: Response, servicio?: string): boolean {
         this._lasterror = false;
         if (resultdata !== null && resultdata.success === false && resultdata.error) {
             if (resultdata.error.code) {
+                if (resultdata.error.code === 'INVALID_SESSIONID') {
+                    Utilities.logins.logOff();
+                    this.router.navigate([CrmConst.loginDir]);
+                    return false;
+                }
                 this._lasterror = resultdata.error.code;
             }
             if (resultdata.error.message) {
@@ -241,7 +248,7 @@ export class VtigerServiceService {
     /**
      * Get last operation error information
      */
-    lastError (): any {
+    lastError(): any {
         return this._lasterror;
     }
 
@@ -249,14 +256,14 @@ export class VtigerServiceService {
      * Perform the challenge
      * @access private
      */
-    private __doChallenge (username: string): Promise<any> {
+    private __doChallenge(username: string): Promise<any> {
         const that = this;
         return new Promise((resolve, reject) => {
             const getdataUrl = '?operation=getchallenge&username=' + username;
             that.http.get(this._serviceurl + getdataUrl)
                 .toPromise()
                 .then( resp => {
-                    const res: Response = <Response>resp;
+                    const res: Response = resp as Response;
                     if (that.hasError(res) === false) {
                         const out: ChallengeResopnse = res.result;
                         that._servicetoken = out.token;
@@ -276,12 +283,12 @@ export class VtigerServiceService {
     /**
      * Check and perform login if requried.
      */
-    private __checkLogin (): boolean {
+    private __checkLogin(): boolean {
         this.getVtigerLoginData();
         return this._isLoggin;
     }
 
-    private getApikey (user: string, password: string): Promise<any> {
+    private getApikey(user: string, password: string): Promise<any> {
         const that = this;
         return new Promise((resolve, reject) => {
             if (user && user.length > 0 && password && password.length > 0) {
@@ -319,7 +326,7 @@ export class VtigerServiceService {
     /**
      * Do Login Operation
      */
-    doDashLogin (usuario: string, password: string): Promise<any> {
+    doDashLogin(usuario: string, password: string): Promise<any> {
         const that = this;
         return new Promise((resolve, reject) => {
             this.getApikey(usuario, password)
@@ -339,7 +346,7 @@ export class VtigerServiceService {
     }
 
 
-    doLogin (username: string, accesskey: string, callback?: any): Promise<any> {
+    doLogin(username: string, accesskey: string, callback?: any): Promise<any> {
         const that = this;
         return new Promise((resolve, reject) => {
             that.__doChallenge(username)
@@ -360,7 +367,7 @@ export class VtigerServiceService {
                     that.http.post(that._serviceurl, payload)
                         .toPromise()
                         .then(reslogin => {
-                            const res: Response = <Response>reslogin;
+                            const res: Response = reslogin as Response;
                             if (that.hasError(res, 'doLogin') === false) {
                                 const out: LoginResponse = res.result;
                                 that._sessionid  = out.sessionName;
@@ -424,7 +431,7 @@ export class VtigerServiceService {
     /**
      * Do Query Operation.
      */
-    doQuery (query: string, callback?: any): Promise<any> {
+    doQuery(query: string, callback?: any): Promise<any> {
         const that = this;
         return new Promise((resolve, reject) => {
             that.__checkLogin();
@@ -436,7 +443,7 @@ export class VtigerServiceService {
             that.http.get(that._serviceurl + getDataUrl)
                 .toPromise()
                 .then(resquery => {
-                    const res: Response = <Response>resquery;
+                    const res: Response = resquery as Response;
                     if (that.hasError(res, 'doQuery') === false) {
                         resolve(res['result']);
                     } else {
@@ -453,7 +460,7 @@ export class VtigerServiceService {
     /**
      * List types (modules) available.
      */
-    doListTypes (callback?: any): Promise<any> {
+    doListTypes(callback?: any): Promise<any> {
         const that = this;
         return new Promise((resolve, reject) => {
             that.__checkLogin();
@@ -461,7 +468,7 @@ export class VtigerServiceService {
             that.http.get(that._serviceurl + getDataUrl)
                 .toPromise()
                 .then(resp => {
-                    const res: Response = <Response>resp;
+                    const res: Response = resp as Response;
                     let returnvalue: any = false;
                     if (that.hasError(res, 'doListTypes') === false) {
                         const out: ListTypeResponse = res.result;
@@ -469,7 +476,7 @@ export class VtigerServiceService {
                         returnvalue = { };
                         modulenames.forEach(value => {
                             returnvalue[value] = {
-                                'name'     : value
+                                name     : value
                             };
                         });
                         resolve(returnvalue);
@@ -488,7 +495,7 @@ export class VtigerServiceService {
     /**
      * Do Describe Operation
      */
-    doDescribe (module: string, callback?: any): Promise<any> {
+    doDescribe(module: string, callback?: any): Promise<any> {
         const that = this;
         return new Promise((resolve, reject) => {
             that.__checkLogin();
@@ -496,7 +503,7 @@ export class VtigerServiceService {
             that.http.get(that._serviceurl + getDataUrl)
                 .toPromise()
                 .then(resp => {
-                    const res: Response = <Response>resp;
+                    const res: Response = resp as Response;
                     if (!that.hasError(res, 'doDescribe')) {
                         resolve(res.result);
                     } else {
@@ -514,7 +521,7 @@ export class VtigerServiceService {
     /**
      * Retrieve details of record
      */
-    doRetrieve (record: string, callback?: any): Promise<any> {
+    doRetrieve(record: string, callback?: any): Promise<any> {
         const that = this;
         return new Promise((resolve, reject) => {
             that.__checkLogin();
@@ -522,7 +529,7 @@ export class VtigerServiceService {
             that.http.get(that._serviceurl + getDataUrl)
                 .toPromise()
                 .then(resp => {
-                    const res: Response = <Response>resp;
+                    const res: Response = resp as Response;
                     if (!that.hasError(res, 'doRetrieve')) {
                         resolve(res['result']);
                     } else {
@@ -540,7 +547,7 @@ export class VtigerServiceService {
     /**
      * Do Create Operation
      */
-    doCreate (module: string, valuemap: any, callback?: any): Promise<any> {
+    doCreate(module: string, valuemap: any, callback?: any): Promise<any> {
         const that = this;
         return new Promise((resolve, reject) => {
             that.__checkLogin();
@@ -558,7 +565,7 @@ export class VtigerServiceService {
             that.http.post(that._serviceurl, payload)
                 .toPromise()
                 .then(resp => {
-                    const res: Response = <Response>resp;
+                    const res: Response = resp as Response;
                     if (!that.hasError(res, 'doCreate')) {
                         resolve(res.result);
                     } else {
@@ -575,7 +582,7 @@ export class VtigerServiceService {
     /**
      * Invoke custom operation
      */
-    doInvoke (method: string, params: any, type: any, callback?: any): Promise<any> {
+    doInvoke(method: string, params: any, type: any, callback?: any): Promise<any> {
         const that = this;
         return new Promise((resolve, reject) => {
             that.__checkLogin();
@@ -587,8 +594,8 @@ export class VtigerServiceService {
             // if(typeof(type) !== 'undefined') const reqtype = type.toUpperCase();
 
             const sendata = {
-                'operation' : method,
-                'sessionName' : that._sessionid,
+                operation : method,
+                sessionName : that._sessionid,
             };
 
             const payload = new FormData();
@@ -607,7 +614,7 @@ export class VtigerServiceService {
             that.http.post(that._serviceurl, payload)
                 .toPromise()
                 .then(resp => {
-                    const res: Response = <Response>resp;
+                    const res: Response = resp as Response;
                     if (!that.hasError(res, 'doInvoke')) {
                         resolve(res['result']);
                     } else {
@@ -621,7 +628,7 @@ export class VtigerServiceService {
         });
     }
 
-    setVtigerLoginData (): void {
+    setVtigerLoginData(): void {
         const data = {
             sessId: this._sessionid,
             userID: this._userid
@@ -631,7 +638,7 @@ export class VtigerServiceService {
         this._isLoggin = true;
     }
 
-    getVtigerLoginData (): void {
+    getVtigerLoginData(): void {
         this._isLoggin = false;
         if (Utilities.logins.isLoggedin()) {
             const data = Utilities.session.getSession('vtigerLoginData');

@@ -9,7 +9,7 @@ export abstract class ArrayUtils {
         return !this.inArray(array, find);
     }
 
-    static objectInArray (arr: any[], obj: any): boolean {
+    static objectInArray(arr: any[], obj: any): boolean {
         const esta = arr.find(oo => ObjectUtils.areEquals(oo, obj));
         return !!esta;
     }
@@ -19,15 +19,15 @@ export abstract class ArrayUtils {
         return !!esta;
     }
 
-    static objectNotInArray (arr: any[], obj: any): boolean {
+    static objectNotInArray(arr: any[], obj: any): boolean {
         return !this.objectInArray(arr, obj);
     }
 
-    static cloneArray (arr: any[]): any[] {
+    static cloneArray(arr: any[]): any[] {
         return [ ...arr];
     }
 
-    static removeFromArray (arr: any[], ind: number): any[] {
+    static removeFromArray(arr: any[], ind: number): any[] {
         arr.splice(ind, 1);
         return arr;
     }

@@ -209,12 +209,28 @@ export interface Vuelos {
     numeroBoleto: string;
 }
 
+export interface HotelesDoc {
+    hotel: any;
+    nombre: string;
+    categoria: string;
+    fechaIn: Date;
+    fechaOut: Date;
+    descripcion: string;
+    img: string[];
+    habitacion: any[];
+    tipoAlimentacion: any[];
+    servicios: any[];
+    noServicios: any[];
+    penalidades: any[];
+}
+
 export interface Cotizacion {
     _id?: string;
-    idQuote: string;
-    crmPotential: {};
+    idQuote: number;
+    crmPotential: any;
     status: string;
     fechaElaboracion: Date;
+    asesor: string;
     oficina: string;
     telefono: string;
     emailAsesor: string;
@@ -225,13 +241,10 @@ export interface Cotizacion {
     autorizaPublicidad: boolean;
     cirugia: boolean;
     embarazo: boolean;
+    otro: string;
     destino: string;
     tipoCotizacion: string;
-    hoteles: [{
-        hotel: {}
-        habitacion: [{}]
-
-    }];
+    hoteles: HotelesDoc[];
     planIncluye: string;
     planNoIncluye: string;
     chd: number;
@@ -240,13 +253,13 @@ export interface Cotizacion {
     adult: number;
     adultValor: number;
     adultValorTotal: number;
-    vuelos: [Vuelos];
+    vuelos: Vuelos[];
     horaSalida: string;
     horaSalidaPresentarseAeropuerto: string;
     horaRetorno: string;
     horaRetornoPresentarseAeropuerto: string;
     tipoTarifa: string;
-    reembolsable: {type: boolean, default: false};
+    reembolsable: boolean;
     cambioNombre: string;
     sistema: Sistema;
 }
