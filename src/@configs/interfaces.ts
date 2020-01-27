@@ -210,13 +210,14 @@ export interface Vuelos {
 }
 
 export interface HotelesDoc {
+    idHotel: string;
     hotel: any;
     nombre: string;
     categoria: string;
     fechaIn: Date;
     fechaOut: Date;
     descripcion: string;
-    img: string[];
+    img: FileSys[];
     habitacion: any[];
     tipoAlimentacion: any[];
     servicios: any[];

@@ -1,15 +1,16 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {CotizacionService} from './cotizacion.service';
 import {FuseProgressBarService} from '@fuse/components/progress-bar/progress-bar.service';
 import {CotizacionesConst} from './cotizacion.const';
-import {CotizacionesModel, CotizacionModel} from './cotizacion.model';
-import {Cotizacion, Hotel, HotelesDoc, Moneda} from '@configs/interfaces';
+import {CotizacionesModel, CotizacionModel, HotelDoc} from './cotizacion.model';
+import {Cotizacion, FileSys, Habitacion, Hotel, HotelesDoc, Moneda} from '@configs/interfaces';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {fuseAnimations} from '@fuse/animations';
 import {Utilities} from '@utilities/utilities';
+import {EntidadFuntionsService} from '@service/entidad-funtions.service';
 
 @Component({
   selector: 'app-cotizacion',
@@ -27,14 +28,16 @@ export class CotizacionComponent implements OnInit {
     entidades: CotizacionesModel;
     entidadForm: FormGroup;
     entidadConst = CotizacionesConst;
-    hoteles: Hotel[];
+    hotelesSelect: HotelesDoc[];
     hotelesForm: FormGroup;
     hotelesFormArray: FormArray;
-    habitacionesForm: FormGroup;
+    habitacionesForm = {};
     serviciosForm: FormGroup;
     monedas: Moneda[];
     asesor: any;
     contact: any;
+    actualHotel = null;
+    habitacionesHoteles = {};
     private _unsubscribeAll: Subject<any>;
 
   constructor(
@@ -42,16 +45,18 @@ export class CotizacionComponent implements OnInit {
       private entidadService: CotizacionService,
       private _formBuilder: FormBuilder,
       private _fuseProgressBarService: FuseProgressBarService,
+      private entidadFuntionsService: EntidadFuntionsService,
   ) {
       // this.entidad = new CotizacionModel();
       this._unsubscribeAll = new Subject();
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
       this.id = this.route.snapshot.params.id;
       this.status = this.route.snapshot.params.status;
       this.monedas = this.entidadService.monedas;
-      this.hoteles = this.entidadService.hoteles;
+      const hotelesGet = await this.entidadService.getHoteles();
+      this.hotelesSelect = hotelesGet.map(h => new HotelDoc(h));
       this.oportunidad = this.entidadService.oportunidad;
       this.asesor = this.entidadService.asesor;
       this.contact = this.entidadService.contact;
@@ -84,7 +89,12 @@ export class CotizacionComponent implements OnInit {
       const emailCliente = this.entidad.emailCliente || this.contact.email;
 
       this.hotelesForm = this._formBuilder.group({
-            hotel: ['']
+            hotel: [
+                {
+                    value: '',
+                    disabled: this.entidadForm && this.entidadForm.get('hoteles').value.length >= 3},
+                Validators.required
+            ]
         });
 
       this.entidadForm = this._formBuilder.group({
@@ -110,74 +120,122 @@ export class CotizacionComponent implements OnInit {
     }
 
     private iniHotelesFormArray(): void {
-        this.entidad.hoteles.forEach(f => {
-            this.hotelesFormArray.push(this.insertHotelesFormArray(f));
+        this.entidad.hoteles.forEach(async f => {
+            this.hotelesFormArray.push(await this.insertHotelesFormArray(f));
         });
     }
 
-    private insertHotelesFormArray(hoteles: HotelesDoc): FormGroup {
+    async getHotelInfo(hotelDoc: HotelDoc): Promise<HotelDoc> {
+      const hotel: Hotel =  await this.entidadService.getHotel(hotelDoc.idHotel);
+      this.habitacionesHoteles[hotelDoc.idHotel] = hotel.habitaciones;
+      hotelDoc.noServicios = hotel.serviciosNoIncluidos;
+      hotelDoc.hotel = hotel;
+      hotelDoc.img = hotel.imagenes;
+      hotelDoc.penalidades = hotel.penalidades;
+      hotelDoc.servicios = hotel.servicios;
+      hotelDoc.tipoAlimentacion = hotel.regimenAlimentacion;
+      return hotelDoc;
+    }
+
+    private async insertHotelesFormArray(hoteles: HotelesDoc): Promise<FormGroup> {
+      return this._formBuilder.group(await this.getHotelInfo(hoteles));
+    }
+
+    private async createHotelesFormArray(hoteles: HotelesDoc = this.actualHotel): Promise<FormGroup> {
+        this.actualHotel = null;
+        this.habitacionesForm[hoteles.idHotel] = this._formBuilder.group({
+            habitacion: ['']
+        });
+        hoteles = await this.getHotelInfo(hoteles);
         return this._formBuilder.group({
-            hotel: hoteles.hotel || null,
-            nombre: hoteles.nombre || null,
-            categoria: hoteles.categoria || null,
-            fechaIn: hoteles.fechaIn || null,
-            fechaOut: hoteles.fechaOut || null,
-            descripcion: hoteles.descripcion || null,
-            img: hoteles.img || null,
-            habitacion: hoteles.habitacion || null,
-            tipoAlimentacion: hoteles.tipoAlimentacion || null,
-            servicios: hoteles.servicios || null,
-            noServicios: hoteles.noServicios || null,
-            penalidades: hoteles.penalidades || null,
+            idHotel             : [hoteles.idHotel || null],
+            hotel               : [hoteles.hotel || null],
+            nombre              : [hoteles.nombre || null],
+            categoria           : [hoteles.categoria || null],
+            fechaIn             : [hoteles.fechaIn || null],
+            fechaOut            : [hoteles.fechaOut || null],
+            descripcion         : [hoteles.descripcion || null],
+            img                 : [hoteles.img || null],
+            habitacion          : [hoteles.habitacion || null],
+            tipoAlimentacion    : [hoteles.tipoAlimentacion || null],
+            servicios           : [hoteles.servicios || null],
+            noServicios         : [hoteles.noServicios || null],
+            penalidades         : [hoteles.penalidades || null],
         });
     }
 
-    createHotelesFormArray(hotel: Hotel): FormGroup {
-        return this._formBuilder.group({
-            hotel: hotel,
-            nombre: hotel.nombre,
-            categoria: hotel.categoria,
-            fechaIn: new Date(),
-            fechaOut: null,
-            descripcion: hotel.descripcion,
-            img: hotel.imagenes,
-            habitacion: null,
-            tipoAlimentacion: hotel.regimenAlimentacion,
-            servicios: hotel.servicios,
-            noServicios: hotel.serviciosNoIncluidos,
-            penalidades: hotel.penalidades,
-        });
+    private async addHotelesFormArray(): Promise<void> { // hoteles: HotelesDoc
+        this.hotelesFormArray.push(await this.createHotelesFormArray());
+        if (this.entidadForm.get('hoteles').value.length >= 3) {
+            this.hotelesForm.controls['hotel'].disable();
+        }
     }
 
-    addHotelesFormArray(hotel: Hotel): void {
-        this.hotelesFormArray.push(this.createHotelesFormArray(hotel));
-    }
-
-    removeHotelesFormArray(index): void {
-        this.hotelesFormArray.removeAt(index);
-    }
-
-    updateHoteles(): void {
+    async updateHoteles(): Promise<void> {
         const hotId = this.hotelesForm.get('hotel').value;
         if ( !hotId )
         {
             return;
         }
-        const hots = [...this.entidadForm.get('hoteles').value, this.hoteles.find(h => h._id === hotId)];
-        if (!Utilities.objects.areEquals(this.entidad.hoteles, hots)) {
+        // const hots = [...this.entidadForm.get('hoteles').value, this.hoteles.find(h => h.idHotel === hotId)];
+        this.actualHotel = this.hotelesSelect.find(h => h.idHotel === hotId);
+        await this.addHotelesFormArray();
+        if (!Utilities.objects.areEquals(this.entidad.hoteles, this.entidadForm.get('hoteles').value)) {
             this.entidadForm.get('hoteles').markAsDirty();
         } else {
             // todo
         }
-        this.entidadForm.controls['hoteles'].setValue(hots);
         this.hotelesForm.reset();
     }
 
-    getHoteles(): Hotel[] {
+    getHoteles(): HotelesDoc[] {
         const hots = this.entidadForm.get('hoteles').value;
-        return this.hoteles.filter( h =>
-            !Utilities.arrays.findPropObjectInArray(hots, '_id', h._id)
+        const newHoteles = this.hotelesSelect.filter( h => hots.every(hh => hh.idHotel !== h.idHotel));
+        return  Utilities.arrays.sortAsc(newHoteles, 'nombre');
+        // return this.hotelesSelect;
+        // !Utilities.arrays.findPropObjectInArray(hots, 'idHotel', h.idHotel)
+    }
+
+    removeHotel(index): void {
+        this.hotelesFormArray.removeAt(index);
+        if (this.entidadForm.get('hoteles').value.length < 3) {
+            this.hotelesForm.controls['hotel'].enable();
+        }
+    }
+
+    updateHabitaciones(id: string, control: FormGroup): void {
+      if (!this.habitacionesForm[id]) {
+          return;
+      }
+      const habId = this.habitacionesForm[id].get('habitacion').value;
+      if ( !habId )
+        {
+            return;
+        }
+      const habs = [...control.get('habitacion').value, this.habitacionesHoteles[id].find(h => h._id === habId)];
+      if (this.entidad.hoteles.length > 0 && !Utilities.objects.areEquals((this.entidad.hoteles.find(h => h.idHotel === id)).habitacion, habs)) {
+            this.entidadForm.markAsDirty();
+        } else {
+            // todo
+        }
+      control.controls.habitacion.setValue(habs);
+      this.habitacionesForm[id].reset();
+    }
+
+    getHabitaciones(id: string, control: FormGroup): Habitacion[] {
+        const habs = control.get('habitacion').value;
+        return this.habitacionesHoteles[id].filter( h =>
+            !Utilities.arrays.findPropObjectInArray(habs, '_id', h._id)
         );
+    }
+
+    /*getSelectedHabitaciones(): Habitacion[] {
+        return this.entidadForm.get('habitaciones').value;
+    }*/
+
+    eliminarHab(id: string, control: FormGroup): void {
+        const habs = [...control.get('habitacion').value].filter(h => h._id !== id);
+        control.controls.habitacion.setValue(habs);
     }
 
 }

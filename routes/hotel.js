@@ -38,6 +38,49 @@ router.get('/tipotarifatypes', cors(), async (req, res, next) => {
     res.json(TipoTarifaTypes);
 });
 
+router.get('/hotelesimgs/:id', cors(), async (req, res, next) => {
+    const valid = await validToken(req.headers);
+    if (!valid) return res.sendStatus(403);
+    Hotel.findById(req.params.id, ' imagenes ',  (err, hotel) => {
+        if (err) return next(err);
+        res.json(hotel);
+    });
+});
+
+router.get('/hotelescontrato/:id', cors(), async (req, res, next) => {
+    const valid = await validToken(req.headers);
+    if (!valid) return res.sendStatus(403);
+    Hotel.findById(req.params.id, ' contrato ',  (err, hotel) => {
+        if (err) return next(err);
+        res.json(hotel);
+    });
+});
+
+router.get('/hotelesfiles/:id', cors(), async (req, res, next) => {
+    const valid = await validToken(req.headers);
+    if (!valid) return res.sendStatus(403);
+    Hotel.findById(req.params.id, ' imagenes contrato ',  (err, hotel) => {
+        if (err) return next(err);
+        res.json(hotel);
+    });
+});
+
+router.get('/hotelesby/:search/:field', cors(), async (req, res, next)=> {
+    const valid = await validToken(req.headers);
+    if (!valid) return res.sendStatus(403);
+    const user = {};
+    const filters = req.params.search.split('##');
+    const values = req.params.field.split('##');
+    filters.forEach((value, indx) => {
+        user[value] = values[indx];
+    });
+    Hotel.findOne(user,  (err, post) => {
+        if (err) return next(err);
+        res.json(post);
+    }).populate('habitaciones').populate('servicios')
+        .populate('serviciosNoIncluidos').populate('penalidades');
+});
+
 router.get('/:id', cors(), async (req, res, next) => {
     const valid = await validToken(req.headers);
     if (!valid) return res.sendStatus(403);
@@ -47,22 +90,6 @@ router.get('/:id', cors(), async (req, res, next) => {
   }).populate('habitaciones').populate('servicios')
       .populate('serviciosNoIncluidos').populate('penalidades').
   populate('tipoTarifa.tipoHabitacion');
-});
-
-router.get('/hotelesby/:search/:field', cors(), async (req, res, next)=> {
-    const valid = await validToken(req.headers);
-    if (!valid) return res.sendStatus(403);
-  const user = {};
-  const filters = req.params.search.split('##');
-  const values = req.params.field.split('##');
-  filters.forEach((value, indx) => {
-    user[value] = values[indx];
-  });
-  Hotel.findOne(user,  (err, post) => {
-    if (err) return next(err);
-    res.json(post);
-  }).populate('habitaciones').populate('servicios')
-      .populate('serviciosNoIncluidos').populate('penalidades');
 });
 
 router.post('/', cors(),async (req, res, next) => {

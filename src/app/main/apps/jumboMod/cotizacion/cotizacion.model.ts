@@ -1,4 +1,4 @@
-import {Vuelos, Sistema, Cotizacion, HotelesDoc} from '@configs/interfaces';
+import {Vuelos, Sistema, Cotizacion, HotelesDoc, Hotel, FileSys} from '@configs/interfaces';
 
 export class CotizacionModel implements Cotizacion{
     _id: string;
@@ -180,4 +180,36 @@ export class CotizacionesModel {
 
     transferCotizacion(): void {}
 
+}
+
+export class HotelDoc implements HotelesDoc{
+    idHotel: string;
+    categoria: string;
+    descripcion: string;
+    fechaIn: Date;
+    fechaOut: Date;
+    habitacion: any[];
+    hotel: any;
+    img: FileSys[];
+    noServicios: any[];
+    nombre: string;
+    penalidades: any[];
+    servicios: any[];
+    tipoAlimentacion: any[];
+
+    constructor(hotel: Hotel) {
+        this.idHotel = hotel._id;
+        this.categoria = hotel.categoria;
+        this.descripcion = hotel.descripcion;
+        this.fechaIn = null;
+        this.fechaOut = null;
+        this.habitacion = [];
+        this.hotel = hotel;
+        this.img = hotel.imagenes;
+        this.noServicios = hotel.serviciosNoIncluidos;
+        this.nombre = hotel.nombre;
+        this.penalidades = hotel.penalidades;
+        this.servicios = hotel.servicios;
+        this.tipoAlimentacion = hotel.regimenAlimentacion;
+    }
 }

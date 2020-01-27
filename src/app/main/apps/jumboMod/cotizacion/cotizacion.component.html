@@ -231,28 +231,162 @@
                             </div>
                         </mat-tab>
                         <mat-tab label="Hoteles">
-                            <div class="section pb-48 w-100-p">
-                                <form class="update-status p-24"
-                                      (ngSubmit)="updateHoteles()"
-                                      [formGroup]="hotelesForm"
-                                      fxLayout="row" fxLayoutAlign="start center">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div class="section pb-48 w-100-p">
+                                    <form class="update-status p-24"
+                                          (ngSubmit)="updateHoteles()"
+                                          [formGroup]="hotelesForm"
+                                          fxLayout="row" fxLayoutAlign="start center">
 
-                                    <mat-form-field appearance="outline" class="mr-16 w-70-p" fxFlex>
-                                        <mat-label>Seleccionar Hotel</mat-label>
-                                        <mat-select formControlName="hotel" required>
-                                            <mat-option *ngFor="let hab of getHoteles()"
-                                                        [value]="hab._id">
-                                                {{hab.nombre}} - Segmento: {{hab.segmeto}}
-                                            </mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
+                                        <mat-form-field appearance="outline" class="mr-16 w-70-p" fxFlex>
+                                            <mat-label>Seleccionar Hotel</mat-label>
+                                            <mat-select formControlName="hotel" required >
+                                                <mat-option *ngFor="let hot of getHoteles()"
+                                                            [value]="hot.idHotel">
+                                                    {{hot.nombre}} - Segmento: {{hot.hotel.segmetohotel}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
 
-                                    <button mat-raised-button class="mat-accent w-30-p"
-                                            [disabled]="hotelesForm.invalid">
-                                        Agregar Hotel
-                                    </button>
-                                </form>
+                                        <button mat-raised-button class="mat-accent w-30-p"
+                                                [disabled]="hotelesForm.invalid || entidadForm.get('hoteles').value.length >= 3">
+                                            Agregar Hotel
+                                        </button>
+                                    </form>
+
+                                    <div class="w-100-p" [formArrayName]="'hoteles'"
+                                         *ngFor="let hotelarr of hotelesFormArray.controls; let l = index;">
+                                        <div class="pb-16" fxLayout="row" fxLayoutAlign="start center">
+                                            <mat-icon class="m-0 mr-16 secondary-text">account_circle</mat-icon>
+                                            <div class="h2 secondary-text">Hotel {{l+1}}: {{hotelarr.get('nombre').value}}</div>
+                                        </div>
+                                        <div [formGroupName]="l">
+                                            <div class="customer mb-32">
+                                                <table class="simple">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Categoria</th>
+                                                        <th>Fecha In</th>
+                                                        <th>Fecha Out</th>
+                                                        <th></th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <span class="email text-truncate">{{hotelarr.get('categoria').value}}</span>
+                                                        </td>
+                                                        <td>
+                                                        <span class="company text-truncate">
+                                                            <mat-form-field class="w-40-p">
+                                                                <input matInput formControlName="fechaIn" [matDatepicker]="fechaIn" placeholder="Fecha In">
+                                                                <mat-datepicker-toggle matSuffix [for]="fechaIn"></mat-datepicker-toggle>
+                                                                <mat-datepicker #fechaIn></mat-datepicker>
+                                                            </mat-form-field>
+                                                        </span>
+                                                        </td>
+                                                        <td>
+                                                        <span class="company text-truncate">
+                                                            <mat-form-field class="w-40-p">
+                                                                <input matInput formControlName="fechaOut" [matDatepicker]="fechaOut" placeholder="Fecha Out">
+                                                                <mat-datepicker-toggle matSuffix [for]="fechaOut"></mat-datepicker-toggle>
+                                                                <mat-datepicker #fechaOut></mat-datepicker>
+                                                            </mat-form-field>
+                                                        </span>
+                                                        </td>
+                                                        <td>
+                                                        <span class="w-20-p">
+                                                            <button mat-button (click)="removeHotel(l)">
+                                                                Borrar Regimen
+                                                            </button>
+                                                        </span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="4">
+                                                            <p>{{hotelarr.get('descripcion').value}}</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr *ngIf="hotelarr.get('img').value.length > 0">
+                                                        <td colspan="4">
+                                                            <div fxLayout="row wrap" fxLayoutAlign="start start">
+
+                                                                <div *ngFor="let image of hotelarr.get('img').value">
+                                                                    <div
+                                                                        class="product-image" fxlayout="column inline" fxLayoutAlign="center center">
+                                                                        <img class="media" [src]="'data:'+image.type+';base64,'+image.data" style="width: 25vw">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="4">
+                                                            <div class="section pb-48 w-100-p">
+                                                                <form class="update-status p-24"
+                                                                      (ngSubmit)="updateHabitaciones(hotelarr.get('idHotel').value, hotelarr)"
+                                                                      [formGroup]="habitacionesForm[hotelarr.get('idHotel').value]"
+                                                                      fxLayout="row" fxLayoutAlign="start center">
+
+                                                                    <mat-form-field appearance="outline" class="mr-16 w-70-p" fxFlex>
+                                                                        <mat-label>Seleccionar Habitacion</mat-label>
+                                                                        <mat-select formControlName="habitacion" required>
+                                                                            <mat-option *ngFor="let hab of getHabitaciones(hotelarr.get('idHotel').value, hotelarr)"
+                                                                                        [value]="hab._id">
+                                                                                {{hab.nombre}} - capacidad: {{hab.capacidad}}
+                                                                            </mat-option>
+                                                                        </mat-select>
+                                                                    </mat-form-field>
+                                                                    <button mat-raised-button class="mat-accent w-30-p"
+                                                                            [disabled]="habitacionesForm[hotelarr.get('idHotel').value].invalid">
+                                                                        Agregar habitacion
+                                                                    </button>
+                                                                </form>
+
+                                                                <table class="simple w-100-p">
+                                                                    <thead>
+                                                                    <tr>
+                                                                        <th>Habitacion</th>
+                                                                        <th>Capacidad</th>
+                                                                        <th>Tipo de Cama</th>
+                                                                        <th></th>
+                                                                    </tr>
+                                                                    </thead>
+                                                                    <tbody>
+
+                                                                    <tr *ngFor="let hab of hotelarr.get('habitacion').value">
+                                                                        <td>
+                                                <span class="status h6 p-4">
+                                                    {{hab.nombre}}
+                                                </span>
+                                                                        </td>
+                                                                        <td>
+                                                <span>
+                                                    {{hab.capacidad}}
+                                                </span>
+                                                                        </td>
+                                                                        <td>
+                                                <span>
+                                                    {{hab.tipoCama}}
+                                                </span>
+                                                                        </td>
+                                                                        <td>
+                                                                            <button mat-button (click)="eliminarHab(hab._id, hotelarr)">Eliminar</button>
+                                                                        </td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+
                         </mat-tab>
                     </mat-tab-group>
                 </form>

@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import {RequestServices} from '@service/servicios.service';
+import {Utilities} from '@utilities/utilities';
+import {FormGroup} from '@angular/forms';
+import {Hotel, HotelesDoc} from '@configs/interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -29,5 +32,57 @@ export class EntidadFuntionsService {
                     }, reject);
             }
         });
+    }
+
+    updateHoteles(
+        {hoteles, entidad, hotelesForm, entidadForm}: {hoteles: Hotel[], entidad: any, hotelesForm: FormGroup, entidadForm: FormGroup}
+        ): void {
+        const hotId = hotelesForm.get('hotel').value;
+        if ( !hotId )
+        {
+            return;
+        }
+        const hots = [...entidadForm.get('hoteles').value, hoteles.find(h => h._id === hotId)];
+        if (!Utilities.objects.areEquals(entidad.hoteles, hots)) {
+            entidadForm.get('hoteles').markAsDirty();
+        } else {
+            // todo
+        }
+        entidadForm.controls['hoteles'].setValue(hots);
+        hotelesForm.reset();
+    }
+
+    updateHotelesDoc(
+        {hoteles, entidad, hotelesForm, entidadForm}: {hoteles: HotelesDoc[], entidad: any, hotelesForm: FormGroup, entidadForm: FormGroup}
+    ): void {
+        const hotId = hotelesForm.get('hotel').value;
+        if ( !hotId )
+        {
+            return;
+        }
+        const hots = [...entidadForm.get('hoteles').value, hoteles.find(h => h.idHotel === hotId)];
+        if (!Utilities.objects.areEquals(entidad.hoteles, hots)) {
+            entidadForm.get('hoteles').markAsDirty();
+        } else {
+            // todo
+        }
+        entidadForm.controls['hoteles'].setValue(hots);
+        hotelesForm.reset();
+    }
+
+    getHoteles({hoteles, entidadForm}: {hoteles: Hotel[], entidadForm: FormGroup}
+    ): Hotel[] {
+        const hots = entidadForm.get('hoteles').value;
+        return Utilities.arrays.sortAsc(hoteles.filter( h =>
+            !Utilities.arrays.findPropObjectInArray(hots, '_id', h._id)
+        ), 'nombre');
+    }
+
+    getHotelesDoc({hoteles, entidadForm}: {hoteles: HotelesDoc[], entidadForm: FormGroup}
+    ): HotelesDoc[] {
+        const hots = entidadForm.get('hoteles').value;
+        return Utilities.arrays.sortAsc(hoteles.filter( h =>
+            !Utilities.arrays.findPropObjectInArray(hots, 'idHotel', h.idHotel)
+        ), 'nombre');
     }
 }

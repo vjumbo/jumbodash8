@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from '@angular/router';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {Cotizacion, Habitacion, Hotel, Moneda, Penalidad, Servicio} from '@configs/interfaces';
+import {Cotizacion, FileSys, Habitacion, Hotel, Moneda, Penalidad, Servicio} from '@configs/interfaces';
 import {BackEndConst} from '@configs/constantes';
 import {RequestServices} from '@service/servicios.service';
 import {VtigerServiceService} from '@service/vtiger.Service';
 import {EntidadFuntionsService} from '@service/entidad-funtions.service';
+import {HotelDoc} from './cotizacion.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ import {EntidadFuntionsService} from '@service/entidad-funtions.service';
 export class CotizacionService implements Resolve<any> {
     routeParams: any;
     entidad: Cotizacion[];
-    hoteles: Hotel[];
+    // hoteles: Hotel[];
     monedas: Moneda[];
     onEntidadChanged: BehaviorSubject<any>;
     oportunidad: any;
@@ -82,13 +83,24 @@ export class CotizacionService implements Resolve<any> {
             .doQuery(`select * from Contacts where id = ${this.oportunidad.contact_id}`);
         this.contact = contact[0];
         console.log(this.contact);
-        this.hoteles = await this.requestServices.reqGet(
-            `${BackEndConst.backEndUrl}${BackEndConst.endPoints.hoteles}`).toPromise() as any;
+        /*this.hoteles = await this.requestServices.reqGet(
+            `${BackEndConst.backEndUrl}${BackEndConst.endPoints.hoteles}`).toPromise() as any;*/
         return this.entidadFuntionsService.getEntidad(
             this.routeParams.id,
             this.onEntidadChanged,
             this.entidad,
             `${this.url}/oportunidad`
         );
+    }
+
+    async getHotel(id: string): Promise<Hotel> {
+        const hotel = await this.requestServices
+            .reqGet(`${BackEndConst.backEndUrl}${BackEndConst.endPoints.hoteles}/${id}`).toPromise() as any;
+        return hotel as Hotel;
+    }
+
+    async getHoteles(): Promise<Hotel[]> {
+        return await this.requestServices.reqGet(
+            `${BackEndConst.backEndUrl}${BackEndConst.endPoints.hoteles}`).toPromise() as Hotel[];
     }
 }

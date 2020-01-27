@@ -13,6 +13,7 @@ import {Hotel, Moneda} from '@configs/interfaces';
 import {Utilities} from '@utilities/utilities';
 import {CountriesService} from '@service/countries.service';
 import {FuseProgressBarService} from '@fuse/components/progress-bar/progress-bar.service';
+import {EntidadFuntionsService} from '@service/entidad-funtions.service';
 
 
 @Component({
@@ -51,6 +52,7 @@ export class ProveedorComponent implements OnInit, OnDestroy
      * @param router
      * @param _countries
      * @param _fuseProgressBarService
+     * @param entidadFuntionsService
      */
     constructor(
         private entidadService: ProveedorService,
@@ -60,6 +62,7 @@ export class ProveedorComponent implements OnInit, OnDestroy
         private router: Router,
         private _countries: CountriesService,
         private _fuseProgressBarService: FuseProgressBarService,
+        private entidadFuntionsService: EntidadFuntionsService,
     )
     {
         this.entidadConst = ProveedorConst;
@@ -286,10 +289,10 @@ export class ProveedorComponent implements OnInit, OnDestroy
     }
 
     getHoteles(): Hotel[] {
-        const hots = this.entidadForm.get('hoteles').value;
-        return this.hoteles.filter( h =>
-            !Utilities.arrays.findPropObjectInArray(hots, '_id', h._id)
-        );
+        return this.entidadFuntionsService.getHoteles({
+            hoteles: this.hoteles,
+            entidadForm: this.entidadForm,
+        });
     }
 
     getSelectedHoteles(): Hotel[] {
@@ -297,19 +300,14 @@ export class ProveedorComponent implements OnInit, OnDestroy
     }
 
     updateHoteles(): void {
-        const hotId = this.hotelesForm.get('hotel').value;
-        if ( !hotId )
-        {
-            return;
-        }
-        const hots = [...this.entidadForm.get('hoteles').value, this.hoteles.find(h => h._id === hotId)];
-        if (!Utilities.objects.areEquals(this.entidad.hoteles, hots)) {
-            this.entidadForm.get('hoteles').markAsDirty();
-        } else {
-            // todo
-        }
-        this.entidadForm.controls['hoteles'].setValue(hots);
-        this.hotelesForm.reset();
+        this.entidadFuntionsService.updateHoteles(
+            {
+                hoteles: this.hoteles,
+                entidad: this.entidad,
+                hotelesForm: this.hotelesForm,
+                entidadForm: this.entidadForm
+            }
+        );
     }
 
     eliminarHot(id): void {

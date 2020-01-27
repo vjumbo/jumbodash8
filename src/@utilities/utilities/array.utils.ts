@@ -31,4 +31,22 @@ export abstract class ArrayUtils {
         arr.splice(ind, 1);
         return arr;
     }
+
+    static arraySortObject(a: any, b: any, prop: string): number {
+        if (a[prop] < b[prop]) {
+            return -1;
+        } else if (a[prop] > b[prop]) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    static sortAsc(arr: any[], prop: string): any[] {
+        return arr.sort((a, b) => this.arraySortObject(a, b, prop));
+    }
+
+    static sortDesc(arr: any[], prop: string): any[] {
+        return arr.sort((a, b) => (this.arraySortObject(a, b, prop)) * -1);
+    }
 }
