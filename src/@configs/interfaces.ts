@@ -77,6 +77,7 @@ export interface Habitacion {
   ninos: number;
   inf: number;
   tipoCama: string;
+    imagenes: FileSys[];
   sistema?: Sistema;
 }
 
@@ -209,6 +210,14 @@ export interface Vuelos {
     numeroBoleto: string;
 }
 
+export interface HabHotelDoc {
+    idHab: string;
+    cantidad: number;
+    costo: number;
+    moneda: number;
+    habitacion: Habitacion;
+}
+
 export interface HotelesDoc {
     idHotel: string;
     hotel: any;
@@ -218,7 +227,7 @@ export interface HotelesDoc {
     fechaOut: Date;
     descripcion: string;
     img: FileSys[];
-    habitacion: any[];
+    habitaciones: HabHotelDoc[];
     tipoAlimentacion: any[];
     servicios: any[];
     noServicios: any[];

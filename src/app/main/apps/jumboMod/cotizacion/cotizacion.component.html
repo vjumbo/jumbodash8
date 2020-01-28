@@ -297,13 +297,14 @@
                                                         <td>
                                                         <span class="w-20-p">
                                                             <button mat-button (click)="removeHotel(l)">
-                                                                Borrar Regimen
+                                                                Borrar Hotel
                                                             </button>
                                                         </span>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td colspan="4">
+                                                            <h4>Descripcion Hotel</h4>
                                                             <p>{{hotelarr.get('descripcion').value}}</p>
                                                         </td>
                                                     </tr>
@@ -328,7 +329,7 @@
                                                                       [formGroup]="habitacionesForm[hotelarr.get('idHotel').value]"
                                                                       fxLayout="row" fxLayoutAlign="start center">
 
-                                                                    <mat-form-field appearance="outline" class="mr-16 w-70-p" fxFlex>
+                                                                    <mat-form-field appearance="outline" class="mr-16 w-40-p" fxFlex>
                                                                         <mat-label>Seleccionar Habitacion</mat-label>
                                                                         <mat-select formControlName="habitacion" required>
                                                                             <mat-option *ngFor="let hab of getHabitaciones(hotelarr.get('idHotel').value, hotelarr)"
@@ -337,7 +338,39 @@
                                                                             </mat-option>
                                                                         </mat-select>
                                                                     </mat-form-field>
-                                                                    <button mat-raised-button class="mat-accent w-30-p"
+
+                                                                    <mat-form-field class="w-10-p">
+                                                                        <input matInput
+                                                                               required
+                                                                               name="cantidad"
+                                                                               type="number"
+                                                                               formControlName="cantidad"
+                                                                               placeholder="Cantidad"
+                                                                        >
+                                                                    </mat-form-field>
+
+                                                                    <mat-form-field class="w-20-p">
+                                                                        <mat-label>Moneda</mat-label>
+                                                                        <mat-select formControlName="moneda" required>
+                                                                            <mat-option *ngFor="let ht of monedas"
+                                                                                        [value]="ht.id" required>
+                                                                                {{ht.currency_code}}
+                                                                            </mat-option>
+                                                                        </mat-select>
+                                                                    </mat-form-field>
+
+                                                                    <mat-form-field class="w-10-p">
+                                                                        <input matInput
+                                                                               required
+                                                                               name="costo"
+                                                                               type="number"
+                                                                               formControlName="costo"
+                                                                               placeholder="costo"
+                                                                        >
+                                                                        <span matPrefix>{{monedaSimbolo(hotelarr.get('idHotel').value)}}</span>
+                                                                    </mat-form-field>
+
+                                                                    <button mat-raised-button class="mat-accent w-20-p"
                                                                             [disabled]="habitacionesForm[hotelarr.get('idHotel').value].invalid">
                                                                         Agregar habitacion
                                                                     </button>
@@ -346,37 +379,113 @@
                                                                 <table class="simple w-100-p">
                                                                     <thead>
                                                                     <tr>
+                                                                        <th>Cantidad</th>
                                                                         <th>Habitacion</th>
                                                                         <th>Capacidad</th>
                                                                         <th>Tipo de Cama</th>
+                                                                        <th>Costo</th>
                                                                         <th></th>
                                                                     </tr>
                                                                     </thead>
                                                                     <tbody>
+                                                                    <ng-container *ngFor="let hab of hotelarr.get('habitaciones').value">
+                                                                        <tr>
+                                                                            <td>
+                                                                            <span class="status h6 p-4">
+                                                                                {{hab.cantidad}}
+                                                                            </span>
+                                                                            </td>
+                                                                            <td>
+                                                                            <span class="status h6 p-4">
+                                                                                {{hab.habitacion.nombre}}
+                                                                            </span>
+                                                                            </td>
+                                                                            <td>
+                                                                            <span>
+                                                                                {{hab.habitacion.capacidad}}
+                                                                            </span>
+                                                                            </td>
+                                                                            <td>
+                                                                            <span>
+                                                                                {{hab.habitacion.tipoCama}}
+                                                                            </span>
+                                                                            </td>
+                                                                            <td>
+                                                                            <span class="status h6 p-4">
+                                                                                <span matPrefix>{{getMonedaSimbolo(hab.moneda)}}</span>{{hab.cantidad * hab.costo}}
+                                                                            </span>
+                                                                            </td>
+                                                                            <td>
+                                                                                <button mat-button (click)="eliminarHab(hab.idHab, hotelarr)">Borrar Habitacion</button>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td colspan="6">
+                                                                                <h4>Descripcion Habitacion</h4>
+                                                                                <p>{{hab.habitacion.descripcion}}</p>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr *ngIf="hab.habitacion.imagenes.length > 0">
+                                                                            <td colspan="6">
+                                                                                <div fxLayout="row wrap" fxLayoutAlign="start start">
 
-                                                                    <tr *ngFor="let hab of hotelarr.get('habitacion').value">
-                                                                        <td>
-                                                <span class="status h6 p-4">
-                                                    {{hab.nombre}}
-                                                </span>
-                                                                        </td>
-                                                                        <td>
-                                                <span>
-                                                    {{hab.capacidad}}
-                                                </span>
-                                                                        </td>
-                                                                        <td>
-                                                <span>
-                                                    {{hab.tipoCama}}
-                                                </span>
-                                                                        </td>
-                                                                        <td>
-                                                                            <button mat-button (click)="eliminarHab(hab._id, hotelarr)">Eliminar</button>
-                                                                        </td>
-                                                                    </tr>
+                                                                                    <div *ngFor="let image of hab.habitacion.imagenes">
+                                                                                        <div
+                                                                                            class="product-image" fxlayout="column inline" fxLayoutAlign="center center">
+                                                                                            <img class="media" [src]="'data:'+image.type+';base64,'+image.data" style="width: 25vw">
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </ng-container>
                                                                     </tbody>
                                                                 </table>
                                                             </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr *ngIf="hotelarr.get('tipoAlimentacion').value.length > 0">
+                                                        <td colspan="4">
+                                                            <h2>Tipo de Alimentacion</h2>
+                                                            <dl>
+                                                                <ng-container *ngFor="let tipoalim of hotelarr.get('tipoAlimentacion').value">
+                                                                    <dt>{{tipoalim.nombreRegimen}}</dt>
+                                                                    <dd>{{tipoalim.descripcion}}</dd>
+                                                                </ng-container>
+                                                            </dl>
+
+                                                        </td>
+                                                    </tr>
+                                                    <tr *ngIf="hotelarr.get('servicios').value.length > 0">
+                                                        <td colspan="4">
+                                                            <h2>Servicios Incluidos</h2>
+                                                            <dl>
+                                                                <ng-container *ngFor="let servicios of hotelarr.get('servicios').value">
+                                                                    <dt>{{servicios.nombre}}</dt>
+                                                                    <dd>{{servicios.descripcion}}</dd>
+                                                                </ng-container>
+                                                            </dl>
+                                                        </td>
+                                                    </tr>
+                                                    <tr *ngIf="hotelarr.get('noServicios').value.length > 0">
+                                                        <td colspan="4">
+                                                            <h2>Servicios NO Incluidos</h2>
+                                                            <dl>
+                                                                <ng-container *ngFor="let nservicios of hotelarr.get('noServicios').value">
+                                                                    <dt>{{nservicios.nombre}}</dt>
+                                                                </ng-container>
+                                                            </dl>
+                                                        </td>
+                                                    </tr>
+                                                    <tr *ngIf="hotelarr.get('penalidades').value.length > 0">
+                                                        <td colspan="4">
+                                                            <h2>Penalidades</h2>
+                                                            <dl>
+                                                                <ng-container *ngFor="let penalidad of hotelarr.get('penalidades').value">
+                                                                    <dt>{{penalidad.nombre}}</dt>
+                                                                    <dd>{{penalidad.descripcion}}</dd>
+                                                                </ng-container>
+                                                            </dl>
                                                         </td>
                                                     </tr>
                                                     </tbody>
@@ -387,6 +496,11 @@
                                 </div>
                             </div>
 
+                        </mat-tab>
+                        <mat-tab label="Planes">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+
+                            </div>
                         </mat-tab>
                     </mat-tab-group>
                 </form>

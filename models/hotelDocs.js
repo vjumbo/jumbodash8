@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const {Schema} = mongoose;
 const Hotel = require('./hotel');
 const FileSchema = require('./file');
+const Habitacion = require('./habitacion');
 
 const HotelDocsSchema = new Schema({
     idHotel: String,
@@ -12,7 +13,15 @@ const HotelDocsSchema = new Schema({
     fechaOut: Date,
     descripcion: String,
     img: [FileSchema],
-    habitacion: [],
+    habitaciones: [
+        {
+            idHab: String,
+            cantidad: Number,
+            costo: Number,
+            moneda: Number,
+            habitacion: {type: Schema.Types.ObjectId, ref: 'Habitacion'},
+        }
+    ],
     tipoAlimentacion: [],
     servicios: [],
     noServicios: [],

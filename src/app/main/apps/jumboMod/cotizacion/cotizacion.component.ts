@@ -144,7 +144,10 @@ export class CotizacionComponent implements OnInit {
     private async createHotelesFormArray(hoteles: HotelesDoc = this.actualHotel): Promise<FormGroup> {
         this.actualHotel = null;
         this.habitacionesForm[hoteles.idHotel] = this._formBuilder.group({
-            habitacion: ['']
+            moneda: ['', Validators.required],
+            costo: [0, Validators.required],
+            cantidad: [0, Validators.required],
+            habitacion: ['', Validators.required]
         });
         hoteles = await this.getHotelInfo(hoteles);
         return this._formBuilder.group({
@@ -156,7 +159,7 @@ export class CotizacionComponent implements OnInit {
             fechaOut            : [hoteles.fechaOut || null],
             descripcion         : [hoteles.descripcion || null],
             img                 : [hoteles.img || null],
-            habitacion          : [hoteles.habitacion || null],
+            habitaciones          : [hoteles.habitaciones || null],
             tipoAlimentacion    : [hoteles.tipoAlimentacion || null],
             servicios           : [hoteles.servicios || null],
             noServicios         : [hoteles.noServicios || null],
@@ -208,24 +211,26 @@ export class CotizacionComponent implements OnInit {
           return;
       }
       const habId = this.habitacionesForm[id].get('habitacion').value;
+      const cantidad = this.habitacionesForm[id].get('cantidad').value;
+      const costo = this.habitacionesForm[id].get('costo').value;
       if ( !habId )
         {
             return;
         }
-      const habs = [...control.get('habitacion').value, this.habitacionesHoteles[id].find(h => h._id === habId)];
-      if (this.entidad.hoteles.length > 0 && !Utilities.objects.areEquals((this.entidad.hoteles.find(h => h.idHotel === id)).habitacion, habs)) {
+      const habs = [...control.get('habitaciones').value, {idHab: habId, cantidad, costo, habitacion: this.habitacionesHoteles[id].find(h => h._id === habId)}];
+      if (this.entidad.hoteles.length > 0 && !Utilities.objects.areEquals((this.entidad.hoteles.find(h => h.idHotel === id)).habitaciones, habs)) {
             this.entidadForm.markAsDirty();
         } else {
             // todo
         }
-      control.controls.habitacion.setValue(habs);
+      control.controls.habitaciones.setValue(habs);
       this.habitacionesForm[id].reset();
     }
 
     getHabitaciones(id: string, control: FormGroup): Habitacion[] {
-        const habs = control.get('habitacion').value;
+        const habs = control.get('habitaciones').value;
         return this.habitacionesHoteles[id].filter( h =>
-            !Utilities.arrays.findPropObjectInArray(habs, '_id', h._id)
+            !Utilities.arrays.findPropObjectInArray(habs, 'idHab', h._id)
         );
     }
 
@@ -234,8 +239,18 @@ export class CotizacionComponent implements OnInit {
     }*/
 
     eliminarHab(id: string, control: FormGroup): void {
-        const habs = [...control.get('habitacion').value].filter(h => h._id !== id);
+        const habs = [...control.get('habitacion').value].filter(h => h.idHab !== id);
         control.controls.habitacion.setValue(habs);
+    }
+
+    monedaSimbolo(i): string {
+        const moneda = this.habitacionesForm[i].get('moneda').value;
+        return this.getMonedaSimbolo(moneda);
+    }
+
+    getMonedaSimbolo(moneda): string {
+        return moneda && moneda.length > 0 ? this.monedas.find(m => m.id === moneda).currency_symbol
+            : this.monedas.find(m => m.defaultid < 0).currency_symbol;
     }
 
 }

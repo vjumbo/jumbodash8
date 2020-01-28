@@ -6,7 +6,6 @@ import {BackEndConst} from '@configs/constantes';
 import {RequestServices} from '@service/servicios.service';
 import {VtigerServiceService} from '@service/vtiger.Service';
 import {EntidadFuntionsService} from '@service/entidad-funtions.service';
-import {HotelDoc} from './cotizacion.model';
 
 @Injectable({
   providedIn: 'root'

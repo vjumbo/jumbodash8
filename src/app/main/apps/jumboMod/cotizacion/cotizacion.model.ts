@@ -1,4 +1,4 @@
-import {Vuelos, Sistema, Cotizacion, HotelesDoc, Hotel, FileSys} from '@configs/interfaces';
+import {Vuelos, Sistema, Cotizacion, HotelesDoc, Hotel, FileSys, HabHotelDoc} from '@configs/interfaces';
 
 export class CotizacionModel implements Cotizacion{
     _id: string;
@@ -188,7 +188,7 @@ export class HotelDoc implements HotelesDoc{
     descripcion: string;
     fechaIn: Date;
     fechaOut: Date;
-    habitacion: any[];
+    habitaciones: HabHotelDoc[];
     hotel: any;
     img: FileSys[];
     noServicios: any[];
@@ -203,7 +203,7 @@ export class HotelDoc implements HotelesDoc{
         this.descripcion = hotel.descripcion;
         this.fechaIn = null;
         this.fechaOut = null;
-        this.habitacion = [];
+        this.habitaciones = [];
         this.hotel = hotel;
         this.img = hotel.imagenes;
         this.noServicios = hotel.serviciosNoIncluidos;
