@@ -535,8 +535,8 @@
                                                         </mat-select>
                                                     </mat-form-field>
                                                 </th>
-                                                <th>Valor</th>
                                                 <th>Pasajeros</th>
+                                                <th>Valor</th>
                                                 <th>Total</th>
                                             </tr>
                                             </thead>
@@ -552,7 +552,6 @@
                                                                formControlName="adult"
                                                                (change)="updateTotals('adult')"
                                                         >
-                                                        <span matPrefix>{{getMonedaSimbolo(entidadForm.get('totalMoneda').value)}}</span>
                                                     </mat-form-field>
                                                 </td>
                                                 <td>
@@ -591,7 +590,6 @@
                                                                formControlName="chd"
                                                                (change)="updateTotals('chd')"
                                                         >
-                                                        <span matPrefix>{{getMonedaSimbolo(entidadForm.get('totalMoneda').value)}}</span>
                                                     </mat-form-field>
                                                 </td>
                                                 <td>
@@ -630,7 +628,6 @@
                                                                formControlName="inf"
                                                                (change)="updateTotals('inf')"
                                                         >
-                                                        <span matPrefix>{{getMonedaSimbolo(entidadForm.get('totalMoneda').value)}}</span>
                                                     </mat-form-field>
                                                 </td>
                                                 <td>
