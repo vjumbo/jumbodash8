@@ -257,12 +257,16 @@ export interface Cotizacion {
     hoteles: HotelesDoc[];
     planIncluye: string;
     planNoIncluye: string;
+    totalMomenda: any;
     chd: number;
     chdValor: number;
     chdValorTotal: number;
     adult: number;
     adultValor: number;
     adultValorTotal: number;
+    inf: number;
+    infValor: number;
+    infValorTotal: number;
     vuelos: Vuelos[];
     horaSalida: string;
     horaSalidaPresentarseAeropuerto: string;

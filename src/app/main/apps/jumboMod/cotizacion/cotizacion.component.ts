@@ -112,7 +112,19 @@ export class CotizacionComponent implements OnInit {
             otro                : [this.entidad.otro],
             destino             : [this.entidad.destino],
             tipoCotizacion      : [this.entidad.tipoCotizacion],
-            hoteles             : this._formBuilder.array([])
+            hoteles             : this._formBuilder.array([]),
+            planIncluye         : [this.entidad.planIncluye],
+            planNoIncluye       : [this.entidad.planNoIncluye],
+            totalMoneda         : [this.entidad.totalMomenda],
+            adult               : [this.entidad.adult],
+            adultValor          : [this.entidad.adult],
+            adultValorTotal     : [this.entidad.adult],
+            chd                 : [this.entidad.chd],
+            chdValor            : [this.entidad.chdValor],
+            chdValorTotal       : [this.entidad.chdValorTotal],
+            inf                 : [this.entidad.chd],
+            infValor            : [this.entidad.chdValor],
+            infValorTotal       : [this.entidad.chdValorTotal],
         });
 
       this.hotelesFormArray = this.entidadForm.get('hoteles') as FormArray;
@@ -251,6 +263,12 @@ export class CotizacionComponent implements OnInit {
     getMonedaSimbolo(moneda): string {
         return moneda && moneda.length > 0 ? this.monedas.find(m => m.id === moneda).currency_symbol
             : this.monedas.find(m => m.defaultid < 0).currency_symbol;
+    }
+
+    updateTotals(type: string): void {
+        const cantidad = this.entidadForm.get(`${type}`).value ? this.entidadForm.get(`${type}`).value : 0;
+        const valor = this.entidadForm.get(`${type}Valor`).value ? this.entidadForm.get(`${type}Valor`).value : 0;
+        this.entidadForm.controls[`${type}ValorTotal`].setValue(cantidad * valor);
     }
 
 }

@@ -499,7 +499,169 @@
                         </mat-tab>
                         <mat-tab label="Planes">
                             <div class="tab-content p-24" fusePerfectScrollbar>
-
+                                <mat-form-field class="w-100-p">
+                                    <textarea matInput
+                                              name="planIncluye"
+                                              formControlName="planIncluye"
+                                              placeholder="Plan Incluye"
+                                              rows="10">
+                                    </textarea>
+                                </mat-form-field>
+                                <mat-form-field class="w-100-p">
+                                    <textarea matInput
+                                              name="planNoIncluye"
+                                              formControlName="planNoIncluye"
+                                              placeholder="Plan NO Incluye"
+                                              rows="10">
+                                    </textarea>
+                                </mat-form-field>
+                            </div>
+                        </mat-tab>
+                        <mat-tab label="Totales">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div class="section pb-48">
+                                    <div class="customer mb-32">
+                                        <table class="simple">
+                                            <thead>
+                                            <tr>
+                                                <th>
+                                                    <mat-form-field class="w-100-p">
+                                                        <mat-label>Moneda</mat-label>
+                                                        <mat-select formControlName="totalMoneda" required>
+                                                            <mat-option *ngFor="let ht of monedas"
+                                                                        [value]="ht.id" required>
+                                                                {{ht.currency_code}}
+                                                            </mat-option>
+                                                        </mat-select>
+                                                    </mat-form-field>
+                                                </th>
+                                                <th>Valor</th>
+                                                <th>Pasajeros</th>
+                                                <th>Total</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td>Adulto</td>
+                                                <td>
+                                                    <mat-form-field class="w-100-p">
+                                                        <input matInput
+                                                               required
+                                                               name="adult"
+                                                               type="number"
+                                                               formControlName="adult"
+                                                               (change)="updateTotals('adult')"
+                                                        >
+                                                        <span matPrefix>{{getMonedaSimbolo(entidadForm.get('totalMoneda').value)}}</span>
+                                                    </mat-form-field>
+                                                </td>
+                                                <td>
+                                                    <mat-form-field class="w-100-p">
+                                                        <input matInput
+                                                               required
+                                                               name="adultValor"
+                                                               type="number"
+                                                               formControlName="adultValor"
+                                                               (change)="updateTotals('adult')"
+                                                        >
+                                                        <span matPrefix>{{getMonedaSimbolo(entidadForm.get('totalMoneda').value)}}</span>
+                                                    </mat-form-field>
+                                                </td>
+                                                <td>
+                                                    <mat-form-field class="w-100-p">
+                                                        <input matInput
+                                                               required
+                                                               name="adultValorTotal"
+                                                               type="number"
+                                                               formControlName="adultValorTotal"
+                                                               readonly
+                                                        >
+                                                        <span matPrefix>{{getMonedaSimbolo(entidadForm.get('totalMoneda').value)}}</span>
+                                                    </mat-form-field>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>CHD</td>
+                                                <td>
+                                                    <mat-form-field class="w-100-p">
+                                                        <input matInput
+                                                               required
+                                                               name="chd"
+                                                               type="number"
+                                                               formControlName="chd"
+                                                               (change)="updateTotals('chd')"
+                                                        >
+                                                        <span matPrefix>{{getMonedaSimbolo(entidadForm.get('totalMoneda').value)}}</span>
+                                                    </mat-form-field>
+                                                </td>
+                                                <td>
+                                                    <mat-form-field class="w-100-p">
+                                                        <input matInput
+                                                               required
+                                                               name="chdValor"
+                                                               type="number"
+                                                               formControlName="chdValor"
+                                                               (change)="updateTotals('chd')"
+                                                        >
+                                                        <span matPrefix>{{getMonedaSimbolo(entidadForm.get('totalMoneda').value)}}</span>
+                                                    </mat-form-field>
+                                                </td>
+                                                <td>
+                                                    <mat-form-field class="w-100-p">
+                                                        <input matInput
+                                                               required
+                                                               name="chdValorTotal"
+                                                               type="number"
+                                                               formControlName="chdValorTotal"
+                                                               readonly
+                                                        >
+                                                        <span matPrefix>{{getMonedaSimbolo(entidadForm.get('totalMoneda').value)}}</span>
+                                                    </mat-form-field>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>INF</td>
+                                                <td>
+                                                    <mat-form-field class="w-100-p">
+                                                        <input matInput
+                                                               required
+                                                               name="inf"
+                                                               type="number"
+                                                               formControlName="inf"
+                                                               (change)="updateTotals('inf')"
+                                                        >
+                                                        <span matPrefix>{{getMonedaSimbolo(entidadForm.get('totalMoneda').value)}}</span>
+                                                    </mat-form-field>
+                                                </td>
+                                                <td>
+                                                    <mat-form-field class="w-100-p">
+                                                        <input matInput
+                                                               required
+                                                               name="infValor"
+                                                               type="number"
+                                                               formControlName="infValor"
+                                                               (change)="updateTotals('inf')"
+                                                        >
+                                                        <span matPrefix>{{getMonedaSimbolo(entidadForm.get('totalMoneda').value)}}</span>
+                                                    </mat-form-field>
+                                                </td>
+                                                <td>
+                                                    <mat-form-field class="w-100-p">
+                                                        <input matInput
+                                                               required
+                                                               name="infValorTotal"
+                                                               type="number"
+                                                               formControlName="infValorTotal"
+                                                               readonly
+                                                        >
+                                                        <span matPrefix>{{getMonedaSimbolo(entidadForm.get('totalMoneda').value)}}</span>
+                                                    </mat-form-field>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </mat-tab>
                     </mat-tab-group>
