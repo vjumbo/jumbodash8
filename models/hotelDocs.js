@@ -18,10 +18,10 @@ const HotelDocsSchema = new Schema({
             idHab: String,
             cantidad: Number,
             costo: Number,
-            moneda: Number,
             habitacion: {type: Schema.Types.ObjectId, ref: 'Habitacion'},
         }
     ],
+    totalHotel: Number,
     tipoAlimentacion: [],
     servicios: [],
     noServicios: [],

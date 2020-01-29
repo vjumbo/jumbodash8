@@ -29,6 +29,7 @@ const DocsSchema = new Schema({
     destino: String,
     tipoCotizacion: String,
     hoteles: [HotelDocsSchema],
+    totalHoteles: Number,
     planIncluye: String,
     planNoIncluye: String,
     totalMoneda: {},

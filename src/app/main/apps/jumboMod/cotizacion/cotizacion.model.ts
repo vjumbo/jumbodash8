@@ -21,6 +21,7 @@ export class CotizacionModel implements Cotizacion{
     destino: string;
     tipoCotizacion: string;
     hoteles: HotelesDoc[];
+    totalHoteles: number;
     planIncluye: string;
     planNoIncluye: string;
     totalMomenda: any;
@@ -65,6 +66,7 @@ export class CotizacionModel implements Cotizacion{
         this.destino = entidad.destino || null;
         this.tipoCotizacion = entidad.tipoCotizacion || null;
         this.hoteles = entidad.hoteles || [];
+        this.totalHoteles = entidad.totalHoteles || null;
         this.planIncluye = entidad.planIncluye || null;
         this.planNoIncluye = entidad.planNoIncluye || null;
         this.totalMomenda = entidad.totalMoneda || null;
@@ -198,6 +200,7 @@ export class HotelDoc implements HotelesDoc{
     fechaOut: Date;
     habitaciones: HabHotelDoc[];
     hotel: any;
+    totalHotel: number;
     img: FileSys[];
     noServicios: any[];
     nombre: string;
@@ -213,6 +216,7 @@ export class HotelDoc implements HotelesDoc{
         this.fechaOut = null;
         this.habitaciones = [];
         this.hotel = hotel;
+        this.totalHotel = 0;
         this.img = hotel.imagenes;
         this.noServicios = hotel.serviciosNoIncluidos;
         this.nombre = hotel.nombre;

@@ -102,4 +102,27 @@ export class CotizacionService implements Resolve<any> {
         return await this.requestServices.reqGet(
             `${BackEndConst.backEndUrl}${BackEndConst.endPoints.hoteles}`).toPromise() as Hotel[];
     }
+
+    saveEntidad(entidad: any): Promise<any>
+    {
+        return new Promise((resolve, reject) => {
+            this.requestServices.reqPut(`${this.url}/${entidad._id}`, entidad)
+                .subscribe((response: any) => {
+                    resolve(response);
+                }, reject);
+        });
+    }
+
+    addEntidad(entidad: any): Promise<any>
+    {
+        if (entidad._id === null) {
+            delete entidad._id;
+        }
+        return new Promise((resolve, reject) => {
+            this.requestServices.reqPost(`${this.url}`, entidad)
+                .subscribe((response: any) => {
+                    resolve(response);
+                }, reject);
+        });
+    }
 }

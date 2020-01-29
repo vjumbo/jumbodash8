@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {CotizacionService} from './cotizacion.service';
@@ -11,6 +11,8 @@ import {takeUntil} from 'rxjs/operators';
 import {fuseAnimations} from '@fuse/animations';
 import {Utilities} from '@utilities/utilities';
 import {EntidadFuntionsService} from '@service/entidad-funtions.service';
+import {MatSnackBar} from '@angular/material';
+import {Location} from '@angular/common';
 
 @Component({
   selector: 'app-cotizacion',
@@ -38,6 +40,8 @@ export class CotizacionComponent implements OnInit {
     contact: any;
     actualHotel = null;
     habitacionesHoteles = {};
+    reload = `/apps/jumbomod/cotizacion/`;
+    totalMonedaControl: FormControl;
     private _unsubscribeAll: Subject<any>;
 
   constructor(
@@ -46,6 +50,9 @@ export class CotizacionComponent implements OnInit {
       private _formBuilder: FormBuilder,
       private _fuseProgressBarService: FuseProgressBarService,
       private entidadFuntionsService: EntidadFuntionsService,
+      private _matSnackBar: MatSnackBar,
+      private _location: Location,
+      private cdRef: ChangeDetectorRef,
   ) {
       // this.entidad = new CotizacionModel();
       this._unsubscribeAll = new Subject();
@@ -54,6 +61,7 @@ export class CotizacionComponent implements OnInit {
   async ngOnInit(): Promise<void> {
       this.id = this.route.snapshot.params.id;
       this.status = this.route.snapshot.params.status;
+      this.reload = `${this.reload}${this.id}/${this.status}`;
       this.monedas = this.entidadService.monedas;
       const hotelesGet = await this.entidadService.getHoteles();
       this.hotelesSelect = hotelesGet.map(h => new HotelDoc(h));
@@ -77,6 +85,7 @@ export class CotizacionComponent implements OnInit {
 
               this.createEntidadForm();
           });
+      this.cdRef.detectChanges();
   }
 
     createEntidadForm(): void{
@@ -96,6 +105,7 @@ export class CotizacionComponent implements OnInit {
                 Validators.required
             ]
         });
+      const monedaID = this.entidad.totalMomenda ? this.entidad.totalMomenda : (this.monedas.find(m => m.defaultid.toString() === '-11')).id;
 
       this.entidadForm = this._formBuilder.group({
             fechaElaboracion    : [this.entidad.fechaElaboracion],
@@ -113,9 +123,10 @@ export class CotizacionComponent implements OnInit {
             destino             : [this.entidad.destino],
             tipoCotizacion      : [this.entidad.tipoCotizacion],
             hoteles             : this._formBuilder.array([]),
+            totalHoteles        : [this.entidad.totalHoteles],
             planIncluye         : [this.entidad.planIncluye],
             planNoIncluye       : [this.entidad.planNoIncluye],
-            totalMoneda         : [this.entidad.totalMomenda],
+            totalMoneda         : [monedaID],
             adult               : [this.entidad.adult],
             adultValor          : [this.entidad.adult],
             adultValorTotal     : [this.entidad.adult],
@@ -126,6 +137,14 @@ export class CotizacionComponent implements OnInit {
             infValor            : [this.entidad.chdValor],
             infValorTotal       : [this.entidad.chdValorTotal],
         });
+
+      this.totalMonedaControl = new FormControl('totalMonedaControl');
+      this.entidadForm.controls.totalHoteles.valueChanges.subscribe(value => {
+            this.totalMonedaControl.get('totalMonedaControl').setValue(value, { onlySelf: true, emitEvent: false, emitModelToViewChange: true });
+        }, error => {}, () => { });
+      this.totalMonedaControl.get('totalMonedaControl').valueChanges.subscribe(value => {
+        this.entidadForm.controls.total.get('totalMonedaControl').setValue(value, { onlySelf: true, emitEvent: false, emitModelToViewChange: true });
+        }, error => {}, () => { });
 
       this.hotelesFormArray = this.entidadForm.get('hoteles') as FormArray;
       this.iniHotelesFormArray();
@@ -156,7 +175,7 @@ export class CotizacionComponent implements OnInit {
     private async createHotelesFormArray(hoteles: HotelesDoc = this.actualHotel): Promise<FormGroup> {
         this.actualHotel = null;
         this.habitacionesForm[hoteles.idHotel] = this._formBuilder.group({
-            moneda: ['', Validators.required],
+            // moneda: ['', Validators.required],
             costo: [0, Validators.required],
             cantidad: [0, Validators.required],
             habitacion: ['', Validators.required]
@@ -171,7 +190,8 @@ export class CotizacionComponent implements OnInit {
             fechaOut            : [hoteles.fechaOut || null],
             descripcion         : [hoteles.descripcion || null],
             img                 : [hoteles.img || null],
-            habitaciones          : [hoteles.habitaciones || null],
+            habitaciones        : [hoteles.habitaciones || null],
+            totalHotel          : [hoteles.totalHotel || 0],
             tipoAlimentacion    : [hoteles.tipoAlimentacion || null],
             servicios           : [hoteles.servicios || null],
             noServicios         : [hoteles.noServicios || null],
@@ -211,11 +231,12 @@ export class CotizacionComponent implements OnInit {
         // !Utilities.arrays.findPropObjectInArray(hots, 'idHotel', h.idHotel)
     }
 
-    removeHotel(index): void {
+    removeHotel(index, control: FormGroup): void {
         this.hotelesFormArray.removeAt(index);
         if (this.entidadForm.get('hoteles').value.length < 3) {
             this.hotelesForm.controls['hotel'].enable();
         }
+        this.entidadForm.controls.totalHoteles.setValue(this.entidadForm.controls.totalHoteles.get('totalHoteles').value - control.get('totalHotel').value);
     }
 
     updateHabitaciones(id: string, control: FormGroup): void {
@@ -225,6 +246,9 @@ export class CotizacionComponent implements OnInit {
       const habId = this.habitacionesForm[id].get('habitacion').value;
       const cantidad = this.habitacionesForm[id].get('cantidad').value;
       const costo = this.habitacionesForm[id].get('costo').value;
+      const total = cantidad * costo;
+      control.controls.totalHotel.setValue(control.get('totalHotel').value + total);
+      this.entidadForm.controls.totalHoteles.setValue(this.entidadForm.controls.totalHoteles.get('totalHoteles').value + total);
       if ( !habId )
         {
             return;
@@ -251,8 +275,13 @@ export class CotizacionComponent implements OnInit {
     }*/
 
     eliminarHab(id: string, control: FormGroup): void {
-        const habs = [...control.get('habitacion').value].filter(h => h.idHab !== id);
+        const habitaciones = control.get('habitacion').value;
+        const habs = [...habitaciones].filter(h => h.idHab !== id);
+        const {cantidad, costo} = habitaciones.find(h => h.idHab === id);
+        const total = cantidad * costo;
         control.controls.habitacion.setValue(habs);
+        control.controls.totalHotel.setValue(control.get('totalHotel').value - total);
+        this.entidadForm.controls.totalHoteles.setValue(this.entidadForm.controls.totalHoteles.get('totalHoteles').value - total);
     }
 
     monedaSimbolo(i): string {
@@ -269,6 +298,53 @@ export class CotizacionComponent implements OnInit {
         const cantidad = this.entidadForm.get(`${type}`).value ? this.entidadForm.get(`${type}`).value : 0;
         const valor = this.entidadForm.get(`${type}Valor`).value ? this.entidadForm.get(`${type}Valor`).value : 0;
         this.entidadForm.controls[`${type}ValorTotal`].setValue(cantidad * valor);
+    }
+
+    setNewData(): any {
+        const data = {...this.entidadForm.getRawValue()};
+        data.totalMomenda = this.monedas.find(m => m.id === data.totalMomenda);
+        return data;
+    }
+
+    addEntidad(): void
+    {
+        const data = this.setNewData();
+
+        this.entidadService.addEntidad(Utilities.systems.setEntitySistema(data))
+            .then(() => {
+
+                // Trigger the subscription with new data
+                this.entidadService.onEntidadChanged.next(data);
+
+                // Show the success message
+                this._matSnackBar.open(`${this.status} Agregado`, 'OK', {
+                    verticalPosition: 'top',
+                    duration        : 2000
+                });
+
+                // Change the location with new one
+                this._location.go(this.reload);
+            });
+    }
+
+    saveEntidad(): void
+    {
+        const data = this.setNewData();
+        this.entidadService.saveEntidad(Utilities.systems.setEntitySistema(data))
+            .then(() => {
+
+                // Trigger the subscription with new data
+                this.entidadService.onEntidadChanged.next(data);
+
+                // Show the success message
+                this._matSnackBar.open(`${this.status} Guardado`, 'OK', {
+                    verticalPosition: 'top',
+                    duration        : 2000
+                });
+
+                // Change the location with new one
+                this._location.go(this.reload);
+            });
     }
 
 }

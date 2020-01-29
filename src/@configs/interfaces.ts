@@ -214,7 +214,6 @@ export interface HabHotelDoc {
     idHab: string;
     cantidad: number;
     costo: number;
-    moneda: number;
     habitacion: Habitacion;
 }
 
@@ -228,6 +227,7 @@ export interface HotelesDoc {
     descripcion: string;
     img: FileSys[];
     habitaciones: HabHotelDoc[];
+    totalHotel: number;
     tipoAlimentacion: any[];
     servicios: any[];
     noServicios: any[];
@@ -255,6 +255,7 @@ export interface Cotizacion {
     destino: string;
     tipoCotizacion: string;
     hoteles: HotelesDoc[];
+    totalHoteles: number;
     planIncluye: string;
     planNoIncluye: string;
     totalMomenda: any;
