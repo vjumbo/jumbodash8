@@ -34,6 +34,8 @@ export class CotizacionModel implements Cotizacion{
     inf: number;
     infValor: number;
     infValorTotal: number;
+    totalPlan: number;
+    valorTotal: number;
     vuelos: Vuelos[];
     horaSalida: string;
     horaSalidaPresentarseAeropuerto: string;
@@ -79,6 +81,8 @@ export class CotizacionModel implements Cotizacion{
         this.inf = entidad.inf || null;
         this.infValor = entidad.infValor || null;
         this.infValorTotal = entidad.infValorTotal || null;
+        this.totalPlan = entidad.totalPlan || null;
+        this.valorTotal = entidad.valorTotal || null;
         this.vuelos = entidad.vuelos || [];
         this.horaSalida = entidad.horaSalida || null;
         this.horaSalidaPresentarseAeropuerto = entidad.horaSalidaPresentarseAeropuerto || null;

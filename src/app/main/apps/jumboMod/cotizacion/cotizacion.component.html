@@ -232,7 +232,7 @@
                         </mat-tab>
                         <mat-tab label="Hoteles">
                             <div class="tab-content p-24" fusePerfectScrollbar>
-                                <mat-form-field class="w-50-p">
+                                <!--<mat-form-field class="w-50-p">
                                     <mat-label>Moneda</mat-label>
                                     <mat-select formControlName="totalMoneda" required>
                                         <mat-option *ngFor="let ht of monedas"
@@ -240,8 +240,9 @@
                                             {{ht.currency_code}}
                                         </mat-option>
                                     </mat-select>
-                                </mat-form-field>
-                                <mat-form-field class="w-50-p">
+                                </mat-form-field>-->
+                                <div style="display: inline-block" class="w-20-p">Moneda: {{getMonedaCode(entidadForm.get('totalMoneda').value)}}</div>
+                                <mat-form-field class="w-80-p">
                                     <input matInput
                                            name="totalHoteles"
                                            type="number"
@@ -673,6 +674,37 @@
                                                     </mat-form-field>
                                                 </td>
                                             </tr>
+                                            </tbody>
+                                        </table>
+                                        <table class="simple">
+                                            <tbody>
+                                            <tr>
+                                                <td width="50%"> </td>
+                                                <td width="20%">
+                                                    Total Plan:
+                                                </td>
+                                                <td width="30%">
+                                                    <span matPrefix>{{getMonedaSimbolo(entidadForm.get('totalMoneda').value)}}</span>{{entidadForm.get('totalHoteles').value}}
+                                                </td>
+                                            </tr>
+                                                <tr>
+                                                    <td width="50%"> </td>
+                                                    <td width="20%">
+                                                        Total Hoteles:
+                                                    </td>
+                                                    <td width="30%">
+                                                        <span matPrefix>{{getMonedaSimbolo(entidadForm.get('totalMoneda').value)}}</span>{{entidadForm.get('totalPlan').value}}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="50%"> </td>
+                                                    <td width="20%">
+                                                        Total {{status}}:
+                                                    </td>
+                                                    <td width="30%">
+                                                        <span matPrefix>{{getMonedaSimbolo(entidadForm.get('totalMoneda').value)}}</span>{{entidadForm.get('valorTotal').value}}
+                                                    </td>
+                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>

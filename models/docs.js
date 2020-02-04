@@ -42,6 +42,8 @@ const DocsSchema = new Schema({
     inf: Number,
     infValor: Number,
     infValorTotal: Number,
+    totalPlan: Number,
+    valorTotal: Number,
     vuelos: [Vuelos],
     horaSalida: String,
     horaSalidaPresentarseAeropuerto: String,

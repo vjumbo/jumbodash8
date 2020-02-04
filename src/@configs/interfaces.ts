@@ -268,6 +268,8 @@ export interface Cotizacion {
     inf: number;
     infValor: number;
     infValorTotal: number;
+    totalPlan: number;
+    valorTotal: number;
     vuelos: Vuelos[];
     horaSalida: string;
     horaSalidaPresentarseAeropuerto: string;

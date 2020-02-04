@@ -41,7 +41,7 @@ export class CotizacionComponent implements OnInit {
     actualHotel = null;
     habitacionesHoteles = {};
     reload = `/apps/jumbomod/cotizacion/`;
-    totalMonedaControl: FormControl;
+    // totalMonedaControl: FormControl;
     private _unsubscribeAll: Subject<any>;
 
   constructor(
@@ -136,15 +136,17 @@ export class CotizacionComponent implements OnInit {
             inf                 : [this.entidad.chd],
             infValor            : [this.entidad.chdValor],
             infValorTotal       : [this.entidad.chdValorTotal],
+            totalPlan           : [this.entidad.totalPlan],
+            valorTotal          : [this.entidad.valorTotal],
         });
 
-      this.totalMonedaControl = new FormControl('totalMonedaControl');
+      /*this.totalMonedaControl = new FormControl('totalMonedaControl');
       this.entidadForm.controls.totalHoteles.valueChanges.subscribe(value => {
             this.totalMonedaControl.get('totalMonedaControl').setValue(value, { onlySelf: true, emitEvent: false, emitModelToViewChange: true });
         }, error => {}, () => { });
       this.totalMonedaControl.get('totalMonedaControl').valueChanges.subscribe(value => {
         this.entidadForm.controls.total.get('totalMonedaControl').setValue(value, { onlySelf: true, emitEvent: false, emitModelToViewChange: true });
-        }, error => {}, () => { });
+        }, error => {}, () => { });*/
 
       this.hotelesFormArray = this.entidadForm.get('hoteles') as FormArray;
       this.iniHotelesFormArray();
@@ -236,7 +238,8 @@ export class CotizacionComponent implements OnInit {
         if (this.entidadForm.get('hoteles').value.length < 3) {
             this.hotelesForm.controls['hotel'].enable();
         }
-        this.entidadForm.controls.totalHoteles.setValue(this.entidadForm.controls.totalHoteles.get('totalHoteles').value - control.get('totalHotel').value);
+        this.entidadForm.controls.totalHoteles.setValue(this.entidadForm.get('totalHoteles').value - control.get('totalHotel').value);
+        this.updateValorTotal();
     }
 
     updateHabitaciones(id: string, control: FormGroup): void {
@@ -248,7 +251,8 @@ export class CotizacionComponent implements OnInit {
       const costo = this.habitacionesForm[id].get('costo').value;
       const total = cantidad * costo;
       control.controls.totalHotel.setValue(control.get('totalHotel').value + total);
-      this.entidadForm.controls.totalHoteles.setValue(this.entidadForm.controls.totalHoteles.get('totalHoteles').value + total);
+      this.entidadForm.controls.totalHoteles.setValue(this.entidadForm.get('totalHoteles').value + total);
+      this.updateValorTotal();
       if ( !habId )
         {
             return;
@@ -281,7 +285,8 @@ export class CotizacionComponent implements OnInit {
         const total = cantidad * costo;
         control.controls.habitacion.setValue(habs);
         control.controls.totalHotel.setValue(control.get('totalHotel').value - total);
-        this.entidadForm.controls.totalHoteles.setValue(this.entidadForm.controls.totalHoteles.get('totalHoteles').value - total);
+        this.entidadForm.controls.totalHoteles.setValue(this.entidadForm.get('totalHoteles').value - total);
+        this.updateValorTotal();
     }
 
     monedaSimbolo(i): string {
@@ -294,10 +299,29 @@ export class CotizacionComponent implements OnInit {
             : this.monedas.find(m => m.defaultid < 0).currency_symbol;
     }
 
+    getMonedaCode(moneda): string {
+        return moneda && moneda.length > 0 ? this.monedas.find(m => m.id === moneda).currency_code
+            : this.monedas.find(m => m.defaultid < 0).currency_code;
+    }
+
     updateTotals(type: string): void {
         const cantidad = this.entidadForm.get(`${type}`).value ? this.entidadForm.get(`${type}`).value : 0;
         const valor = this.entidadForm.get(`${type}Valor`).value ? this.entidadForm.get(`${type}Valor`).value : 0;
         this.entidadForm.controls[`${type}ValorTotal`].setValue(cantidad * valor);
+        this.updateTotalPlan();
+    }
+
+    private updateTotalPlan(): void {
+        this.entidadForm.controls['totalPlan'].setValue(
+            this.entidadForm.get('adultValorTotal').value + this.entidadForm.get('chdValorTotal').value + this.entidadForm.get('infValorTotal').value
+        );
+        this.updateValorTotal();
+    }
+
+    private updateValorTotal(): void {
+        this.entidadForm.controls['valorTotal'].setValue(
+            this.entidadForm.get('totalPlan').value + this.entidadForm.get('totalHoteles').value
+        );
     }
 
     setNewData(): any {
