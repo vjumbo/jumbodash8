@@ -71,7 +71,7 @@ export class CotizacionModel implements Cotizacion{
         this.totalHoteles = entidad.totalHoteles || null;
         this.planIncluye = entidad.planIncluye || null;
         this.planNoIncluye = entidad.planNoIncluye || null;
-        this.totalMomenda = entidad.totalMoneda || null;
+        this.totalMomenda = entidad.totalMoneda.id || null;
         this.chd = entidad.chd || null;
         this.chdValor = entidad.chdValor || null;
         this.chdValorTotal = entidad.chdValorTotal || null;
