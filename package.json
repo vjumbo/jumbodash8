@@ -75,7 +75,7 @@
         "prismjs": "1.16.0",
         "rxjs": "6.5.2",
         "serve-favicon": "2.5.0",
-        "simple-crypto-js": "2.2.0",
+        "simple-crypto-js": "2.3.0",
         "uuid": "3.3.3",
         "web-animations-js": "github:angular/web-animations-js#release_pr208",
         "zone.js": "0.9.1",
